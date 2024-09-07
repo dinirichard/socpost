@@ -14,7 +14,13 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@socpost/libraries/nest/*": ["apps/libraries/nest/src/*"],
+      // "@socpost/libraries/ng": ["apps/libraries/ng/src/index.ts"],
+      "@socpost/libraries/ng/*": ["apps/libraries/ng/src/*"],
+      "@socpost/api/*": ["apps/api/src/*"],
+      "@socpost/client/*": ["apps/client/src/*"],
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
