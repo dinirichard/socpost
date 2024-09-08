@@ -1,82 +1,83 @@
 # Socpost
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+## Intro
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+-   Schedule all your social media posts (many AI features)
+-   Measure your work with analytics.
+-   Collaborate with other team members to exchange or buy posts.
+-   Invite your team members to collaborate, comment, and schedule posts.
+-   At the moment there is no difference between the hosted version to the self-hosted version
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/nest?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## Tech Stack
 
-## Finish your CI setup
+-   NX (Monorepo)         <a  alt="Nx logo"  href="https://nx.dev"  target="_blank"  rel="noreferrer"><img  src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png"  width="45"></a>
+-   Nest.Js
+-   Angular
+-   Prisma (Default to PostgreSQL)
+-   Redis (BullMQ)
+-   Docker
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/TMmDlvi9OJ)
+## Installation
 
+1.  **Clone the repository**
+    
 
-## Run tasks
+```bash
+git clone https://github.com/dinirichard/socpost
 
-To run the dev server for your app, use:
-
-```sh
-npx nx serve socpost
 ```
 
-To create a production bundle:
+2.  **Copy environment variables**
+    
 
-```sh
-npx nx build socpost
+Copy the `.env.example` file to `.env` and fill in the values
+
+```bash
+DATABASE_URL="postgres database URL"
+REDIS_URL="redis database URL"
+JWT_SECRET="random string for your JWT secret, make it long"
+FRONTEND_URL="By default: http://localhost:4200"
+NEXT_PUBLIC_BACKEND_URL="By default: http://localhost:3000"
+BACKEND_INTERNAL_URL="If you use docker, you might want something like: http://backend:3000"
+YOUTUBE_CLIENT_ID="YouTube Client Id"
+YOUTUBE_CLIENT_SECRET="YouTube Client Secret"
+GITHUB_CLIENT_ID="GitHub Client ID"
+GITHUB_CLIENT_SECRET="GitHub Client Secret"
+RESEND_API_KEY="Resend API KEY"
+UPLOAD_DIRECTORY="optional: your upload directory path if you host your files locally"
+NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY="optional: your upload directory slug if you host your files locally"
+NX_ADD_PLUGINS=false
+IS_GENERAL="true" # required for now
+
 ```
 
-To see all available targets to run for a project, run:
+3.  **Install the dependencies**
+    
 
-```sh
-npx nx show project socpost
-```
-        
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+```bash
+npm install
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/nest:app demo
 ```
 
-To generate a new library, use:
+4.  **Setup postgres & redis via docker compose**
+    
 
-```sh
-npx nx g @nx/node:lib mylib
+```bash
+docker compose -f "docker-compose.dev.yaml" up
+
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+5.  **Generate the prisma client and run the migrations**
+    
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+npm run prisma-db-push
 
+```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+6.  **Run the project**
+    
 
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/nest?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+npm run devApp
+```
