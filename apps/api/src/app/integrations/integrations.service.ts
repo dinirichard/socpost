@@ -1,32 +1,55 @@
 import { Injectable } from '@nestjs/common';
-import { CreateIntegrationDto } from './dto/create-integration.dto';
-import { UpdateIntegrationDto } from './dto/update-integration.dto';
-import { IntegrationManager } from '@socpost/libraries/nest/lib/integrations/integration.manager';
+// import { IntegrationManager } from '@socpost/libraries/nest/lib/integrations/integration.manager';
+import { DatabaseService } from '../../database/database.service';
+import { Prisma } from '@prisma/client';
+import { PrismaClientInitializationError } from '@prisma/client/runtime/library';
+import axios from 'axios';
 
 @Injectable()
 export class IntegrationsService {
   constructor(
-    private integrationManager: IntegrationManager,
+    // private integrationManager: IntegrationManager,
+    private readonly databaseService: DatabaseService 
   ){}
 
 
-  create(createIntegrationDto: CreateIntegrationDto) {
-    return 'This action adds a new integration';
+  async create(createIntegrationDto: Prisma.IntegrationCreateInput) {
+
+    const loadImage = await axios.get(createIntegrationDto.picture, { responseType: 'arraybuffer' });
+    // const up
+
+
+    return this.databaseService.integration.create({
+      data: createIntegrationDto
+    });
   }
 
-  findAll() {
-    return `This action returns all integrations`;
+  async findAll() {
+    return this.databaseService.integration.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} integration`;
+  async findOne(id: string) {
+    return this.databaseService.integration.findUnique({
+      where: {
+        id,
+      }
+    });
   }
 
-  update(id: number, updateIntegrationDto: UpdateIntegrationDto) {
-    return `This action updates a #${id} integration`;
+  async update(id: string, updateIntegrationDto: Prisma.IntegrationUpdateInput) {
+    return this.databaseService.integration.update({
+      where: {
+        id,
+      },
+      data: updateIntegrationDto
+    })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} integration`;
+  async remove(id: string) {
+    return this.databaseService.integration.delete({
+      where: {
+        id
+      }
+    })
   }
 }
