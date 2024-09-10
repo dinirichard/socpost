@@ -74,7 +74,7 @@ docker compose -f "docker-compose.dev.yaml" up
 5. **Generate the prisma client and run the migrations**
 
 ```bash
-npm run prisma-db-push
+npx prisma migrate dev
 
 ```
 

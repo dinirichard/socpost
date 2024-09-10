@@ -1,0 +1,43 @@
+section {
+    height: 100%;
+    margin-top: 73px;
+    padding-top: 73px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+ul {
+    display: flex;
+    position: sticky;
+    top: 0;
+  }
+
+
+  li {
+    display: flex;
+    width: 100vw;
+    // height: calc(100vh - 8.3vh);
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow: hidden;
+    
+  }
+
+  .progress {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--red);
+    bottom: 50px;
+    transform: scaleX(0);
+  }
