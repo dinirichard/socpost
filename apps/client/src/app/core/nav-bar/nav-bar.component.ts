@@ -1,6 +1,7 @@
-import { Component, effect, ElementRef, OnInit, signal, viewChild } from "@angular/core";
-import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { Component, effect, ElementRef, inject, OnInit, signal, viewChild } from "@angular/core";
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { animate, scroll } from "motion";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
     selector: "app-navbar",
@@ -17,6 +18,13 @@ export class NavBarComponent {
     // navbarVisible = signal(true);
     // hover = signal(false);
     // navbar = viewChild.required<ElementRef>("navbar");
+
+    authService = inject(AuthService);
+    router = inject(Router);
+    public logout() {
+        this.authService.logout();
+        this.router.navigate(["login"]);
+    }
     // ngOnInit() {
     // scroll((scrollInfo) => {
     //     const position = scrollInfo.y.current;

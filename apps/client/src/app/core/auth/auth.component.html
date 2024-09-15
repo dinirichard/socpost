@@ -139,7 +139,7 @@
           <p>A nice room to spend your time in</p>
 
           @if (!switchForm()) {
-          <form [formGroup]="registerForm" (ngSubmit)="onLogin()" class="flex flex-col gap-4">
+          <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="flex flex-col gap-4">
 
             <mat-form-field class="p-2 mt-8" appearance="outline">
             <input class="" type="name" matInput formControlName="name" id="name" placeholder="John" />
@@ -244,7 +244,7 @@
                     color: #00486A;
                     }"
               >
-                Login
+                Register
               </button>
             </div>
           </form>

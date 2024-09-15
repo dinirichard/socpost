@@ -10,5 +10,5 @@ import { NavBarComponent } from "./core/nav-bar/nav-bar.component";
     styleUrl: "./app.component.scss",
 })
 export class AppComponent {
-    title = "client";
+    title = "SocPost";
 }
