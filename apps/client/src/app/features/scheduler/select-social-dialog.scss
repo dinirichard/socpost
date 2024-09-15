@@ -1,0 +1,60 @@
+.container {
+	margin: 30px auto;
+
+	display: grid;
+	grid-template-rows: repeat(auto-fit, minmax(80px, min-content));
+	grid-template-columns: repeat(auto-fit, 70px);
+
+	width: 90%;
+	grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    row-gap: 10px;
+    column-gap: 10px;
+}
+
+.item {
+	font-family: sans-serif;
+	font-size: 30px;
+    overflow: hidden;
+    display: flex;
+    justify-self: center;
+    align-self: center;
+
+    .img {
+        transition: transform 0.3s;
+        @media (max-width: 640px) {
+                width: 50px;
+                height: 50px;
+        }
+
+        
+    }
+    .img:hover {
+        transform: scale(1.2);
+    }
+
+	&--1 {
+		background-color: crimson;
+	}
+	&--2 {
+		background-color: white;
+	}
+	&--3 {
+		background-color: blueviolet;
+	}
+	&--4 {
+		background-color: goldenrod;
+	}
+	&--5 {
+		background-color: royalblue;
+	}
+	&--6 {
+		background-color: lightcoral;
+	}
+	&--7 {
+		background-color: palevioletred;
+	}
+	&--8 {
+		background-color: orangered;
+	}
+}
+

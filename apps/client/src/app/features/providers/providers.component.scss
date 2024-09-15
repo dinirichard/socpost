@@ -1,0 +1,62 @@
+.content {
+    padding: 24px;
+}
+
+mat-sidenav-container {
+    min-height: 100%;
+    // padding-top: 64px;
+}
+
+.sidenav-header {
+    padding-top: 24px;
+    text-align: center;
+}
+
+.addProvider {
+    padding: 16px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.add-button {
+    // padding-top: 24px;
+    
+}
+
+.providerImg {
+    object-fit: fit;
+    // background-color: aliceblue;
+}
+
+img.mat-mdc-list-item-icon.providerImg.mdc-list-item__start {
+    margin: 0px 16px;
+    height: 50px;
+    width: 50px;
+    align-self: center;
+}
+
+mat-icon.mat-icon.notranslate.material-icons.mat-ligature-font.mat-icon-no-color {
+
+    height: 24px;
+    width: 24px;
+    font: 24px 'Material icons';
+    
+}
+
+.add-button-collapsed.mdc-button {
+    min-width: 65px;
+    
+    mat-icon.mat-icon.notranslate.material-icons.mat-ligature-font.mat-icon-no-color {
+        margin: 0px 0px;
+    }
+}
+
+.add-button-collapsed.mat-mdc-unelevated-button {
+    padding: 0px 0px;
+}
+
+.hide-header-text {
+    opacity: 0;
+    height: 0px;
+    width: 0px;
+}
