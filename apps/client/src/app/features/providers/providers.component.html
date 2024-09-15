@@ -1,0 +1,43 @@
+
+<mat-sidenav-container>
+    <mat-sidenav opened mode="side" [style.width]='sideNavWidth'> 
+        
+            <div class="sidenav-header" [class.hide-header-text]='sideNavWidth === "70px"'>
+                <h3>Providers</h3>
+                <mat-divider></mat-divider>
+            </div>
+
+        
+
+        <div class="addProvider">
+            @if (sideNavWidth !== '250px') {
+                <button mat-flat-button class="add-button-collapsed">
+                    <mat-icon >add</mat-icon>
+                </button>
+                
+            } @else {
+                <button mat-flat-button class="add-button">
+                    <mat-icon>add</mat-icon>
+                    Add Providers
+                </button>
+            }
+        </div>
+        <mat-divider></mat-divider>
+        <mat-nav-list>
+            @for(item of menuItems(); track item.id) {
+                <a mat-list-item href="/scheduler">
+                    <img matListItemIcon [width]="providerImgSize()" [height]="providerImgSize()" src='{{item.label}}.png' class="providerImg" alt='{{item.name}}' />
+                    <div matListItemTitle *ngIf="sideNavCollapsed" class="providerName">{{item.name}}</div>
+                    <div matListItemLine *ngIf="sideNavCollapsed" >Account Name</div>
+                </a>
+                
+            } 
+            @empty {
+                <p>There are no linked providers</p>
+            }
+        </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content class="content" [style.margin-left]="sideNavWidth">
+        <app-scheduler (sideNavWidthOutput)="changeSideNav($event)"></app-scheduler>
+    </mat-sidenav-content>
+</mat-sidenav-container>

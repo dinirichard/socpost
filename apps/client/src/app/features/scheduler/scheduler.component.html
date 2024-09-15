@@ -1,0 +1,6 @@
+<button mat-icon-button (click)="collasped.set(!collasped())" class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+</button>
+
+<!-- <daypilot-calendar [config]="config" [events]="events" #calendar></daypilot-calendar> -->
+<daypilot-month [config]="monthConfig" [events]="events" #monthCal></daypilot-month>
