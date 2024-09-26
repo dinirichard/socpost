@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Logger, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Logger, Post, UseGuards, Request } from "@nestjs/common";
 
 import { AuthService } from "./auth.service";
 import { PassportJwtAuthGuard } from "../../shared/guards/passport-jwt.guard";
@@ -19,8 +19,8 @@ export class AuthController {
 
     @Get("me")
     @UseGuards(PassportJwtAuthGuard)
-    async getUserInfo(@Body() token: string) {
-        return this.authService.authenticate(token);
+    async getUserInfo(@Request() request) {
+        return request.user;
     }
 
     @HttpCode(HttpStatus.OK)

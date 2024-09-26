@@ -1,0 +1,88 @@
+.youtube-dialog{
+    background-color: red;
+    height: 100%;
+}
+
+:host .ngx-modal {
+    width: 80%;
+}
+
+.dialog-title {
+    display: flex;
+    justify-content: space-between;
+    
+}
+
+.video-details {
+    min-width: 400px;
+
+    .video-name {
+       width: 100%; 
+    }
+
+    .video-desc {
+        width: 100%;
+    }
+}
+
+.modal {
+    display: flex;
+  }
+  
+.modal-section {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+  
+.collapsed {
+    display: none;
+}
+
+
+
+/* Style for the sidebar */
+.sidenav {
+    // height: 100%;
+    width: 500px;
+    position: fixed;
+    // top: 0;
+    // left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    // padding-top: 60px;
+  }
+  
+  .sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+  }
+  
+  .sidenav a:hover {
+    color: #f1f1f1;
+  }
+  
+  /* Main content area */
+  .main-content {
+    transition: margin-left 0.5s;
+    padding: 16px;
+    margin-left: 500px;
+  }
+  
+  .open-btn {
+    cursor: pointer;
+  }
+  
+  /* Shift the main content to the right when sidenav is opened */
+  .sidenav.active {
+    width: 20px;
+  }
+  
+  .main-content.active {
+    margin-left: 0px;
+  }

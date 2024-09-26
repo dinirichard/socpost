@@ -32,9 +32,10 @@ export class LoginDTO {
 
 export type AuthInput = { email: string; password: string };
 export type SignInData = { id: string; email: string };
-export type AuthResult = { accessToken: string; id: string; email: string };
+export type AuthResult = { accessToken: string; id: string; email: string; orgId: string};
 export interface User {
     id: string;
     email: string;
     password: string;
+    orgId: string;
 };

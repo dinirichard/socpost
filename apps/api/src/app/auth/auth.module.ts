@@ -5,13 +5,13 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from '../../shared/strategies/jwt.strategy';
-import { LocalStrategy } from '../../shared/strategies/local.strategy';
+// import { LocalStrategy } from '../../shared/strategies/local.strategy';
 import { UsersModule } from '../users/users.module';
 
 @Module({
   providers: [
     AuthService, 
-    LocalStrategy, 
+    // LocalStrategy, 
     JwtStrategy
   ],
   controllers: [

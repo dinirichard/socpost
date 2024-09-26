@@ -21,18 +21,22 @@ export class AuthService {
 
     login(data: loginDTO) {
         return this.httpClient.post(`${this.baseUrl}/auth/login`, data).pipe(
-            tap((result) => {
+            tap((result: any) => {
+                localStorage.setItem("accessToken", result.accessToken);
+                localStorage.setItem("orgId", result.orgId);
                 localStorage.setItem("authUser", JSON.stringify(result));
             })
         );
     }
 
     logout() {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("orgId");
         localStorage.removeItem("authUser");
     }
 
     isLoggedIn() {
-        return localStorage.getItem("authUser") !== null;
+        return localStorage.getItem("accessToken") !== null;
     }
 
     // encrypt(password: string): string {

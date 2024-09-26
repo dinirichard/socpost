@@ -1,5 +1,4 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { makeId } from "@socpost/libraries/nest/lib/services/make.is";
 import { Request } from "express";
 import concat from "concat-stream";
@@ -36,8 +35,8 @@ export class CloudflareStorage implements StorageEngine {
                     null,
                     await this.uploadFile(
                         data,
-                        data.lenght,
-                        data.mimType,
+                        data.length,
+                        file.mimetype,
                         mime.extension(file.mimetype)
                     )
                 );
@@ -52,17 +51,14 @@ export class CloudflareStorage implements StorageEngine {
         extension: string
     ): Promise<Multer.File> {
         const id = makeId(10);
-        const parallelUploads3 = new Upload({
-            client: this.client,
-            params: {
-                Bucket: this._bucketName,
-                ACL: "public-read",
-                Key: `${id}.${extension}`,
-                Body: data,
-            },
+        const command = new PutObjectCommand({
+            Bucket: this._bucketName,
+            ACL: "public-read",
+            Key: `${id}.${extension}`,
+            Body: data,
         });
 
-        await parallelUploads3.done();
+        await this.client.send(command);
 
         return {
             filename: `${id}.${extension}`,

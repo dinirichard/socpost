@@ -5,17 +5,17 @@ meta {
 }
 
 post {
-  url: http://localhost:3000/api/files/upload
+  url: http://localhost:3000/api/media/uploadImage
   body: multipartForm
   auth: bearer
 }
 
 auth:bearer {
-  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiQWxpY2UiLCJpYXQiOjE3MjU3NjA2MTcsImV4cCI6MTcyNjAxOTgxN30.ScYm5wzHC-aZHuS8ZfKRRVZTGDpsmck-WpD8dEZKSCc
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0YWVkMDk0Ny00NGFmLTQ1ZTItOTE5ZC1mMDZmYTA0MDEyZjAiLCJlbWFpbCI6ImpvaG5Ad2F5bmUuY29tIiwiaWF0IjoxNzI2NzUwNTYzLCJleHAiOjE3MjcwMDk3NjN9.HfsP7ry1MjpY3T17dnMGO9jKHtFuMGSF4xaFvvpOUbs
 }
 
 body:multipart-form {
-  gay: @file(C:\Users\Admin\Videos\[TutsNode.org] - Mastering Next.js 13 with TypeScript\4.1- Introduction - Code with Mosh - 1920x1080 1184K.mp4)
+  image: @file(C:\Users\Admin\OneDrive\Pictures\Screenshots\Screenshot 2023-04-03 225154.png)
 }
 
 docs {

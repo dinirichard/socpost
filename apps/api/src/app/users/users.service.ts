@@ -2,7 +2,6 @@ import { HttpException, Injectable, InternalServerErrorException, Logger, Unauth
 import { DatabaseService } from "../../database/database.service";
 import { User, UserRegisterDTO } from "../auth/auth.dto";
 import * as bcrypt from 'bcrypt';
-import { Prisma } from "@prisma/client";
 
 
 
@@ -23,7 +22,8 @@ export class UsersService {
             return { 
                 id : user.id, 
                 email: user.email, 
-                password: user.password
+                password: user.password,
+                orgId: user.organizationId
             } as User;
         } catch (error) {
             throw new InternalServerErrorException(error, 'There was an error accessing the database');
@@ -54,7 +54,8 @@ export class UsersService {
         return { 
             id : user.id, 
             email: user.email, 
-            password: user.password
+            password: user.password,
+            orgId: user.organizationId
         } as User;
 
     } catch (error) {

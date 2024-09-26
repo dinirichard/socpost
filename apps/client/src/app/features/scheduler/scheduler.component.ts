@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { YoutubePostComponent } from './posts/youtube.post.component';
+import { ModalService } from 'ngx-modal-ease';
 
 export interface DialogSocialData {
   social: string;
@@ -38,7 +39,7 @@ export interface DialogCalPostData {
     FormsModule, 
     MatDialogModule
   ],
-  providers: [SchedulerService],
+  providers: [SchedulerService , ModalService],
   templateUrl: './scheduler.component.html',
   styleUrl: './scheduler.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,6 +50,8 @@ export class SchedulerComponent
   collasped = signal(false);
   computedCollasped = computed(() => this.collasped() ? '70px' : '250px');
   sideNavWidthOutput = output<string>();
+  // injector = inject(Injector);
+  modalService = inject(ModalService);
   
   // ngOnInit(): void {   
   // }
@@ -79,13 +82,14 @@ export class SchedulerComponent
     theme: 'calendar_green',
     onTimeRangeSelected: async (args) => {
       // const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
-      const selectedSocial = await this.openSocialDialog();
+      // const selectedSocial = await this.openSocialDialog(args);
+      await this.openYoutubeDialog(args);
       const calendar = args.control;
 
-      if(this.social()) {
-        const socialPost = this.openYoutubeDialog(args);
-      }
-      console.log(selectedSocial)
+      // if(this.social()) {
+      //   const socialPost = this.openYoutubeDialog(args);
+      // }
+      // console.log(selectedSocial)
       calendar.clearSelection();
       // if (modal.canceled) { return; }
       // calendar.events.add({
@@ -138,6 +142,7 @@ export class SchedulerComponent
     onTimeRangeSelected: async (args) => {
       const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
       const calendar = args.control;
+      // const selectedSocial = this.openSocialDialog(args);
       calendar.clearSelection();
       if (modal.canceled) { return; }
       calendar.events.add({
@@ -182,7 +187,7 @@ export class SchedulerComponent
     onBeforeEventRender: this.onBeforeEventRender.bind(this),
   };
 
-  constructor(private ds: SchedulerService) {
+  constructor(private ds: SchedulerService ,) {
   }
 
   ngAfterViewInit(): void {
@@ -237,7 +242,7 @@ export class SchedulerComponent
   readonly dialog = inject(MatDialog);
   social = signal('');
 
-  async openSocialDialog() {
+  async openSocialDialog(args: any) {
     const dialogRef = this.dialog.open(SelectSocialDialogComponent, {
       data: {social: this.social()},
     });
@@ -246,19 +251,47 @@ export class SchedulerComponent
       if (result) {
         this.social.set(result.social);
         console.log(`Dialog result: ${result.social}`);
+
+        this.openYoutubeDialog(args);
       }
     });
   }
 
   openYoutubeDialog(args: any) {
-    const dialogRef = this.dialog.open(YoutubePostComponent, {
-      data: { calenderArgs: args },
+    // const dialogRef = this.dialog.open(YoutubePostComponent, {
+    //   data: { calenderArgs: args },
+    //   height: '90%',
+    //   width: '80%'
+    // });
+
+    this.modalService.open(YoutubePostComponent, {
+      modal: {
+        // animation
+        enter: 'enter-scale-down 0.1s ease-out',
+      },
+      overlay: {
+        // animation
+        leave: 'fade-out 0.3s',
+      },
+      size: {
+        // modal configuration
+        width: '400px',
+        height: '90%',
+      },
+      data: {
+        // data to ModalContentComponent
+        calenderArgs: args,
+      },
+    })
+    .then((dataFromModalContentComponent) => {
+      // this.social.set(dataFromModalContentComponent)
+      console.log(`Dialog result: ${dataFromModalContentComponent}`);
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      this.social.set(result.social)
-      console.log(`Dialog result: ${result.social}`);
-    });
+    // dialogRef.afterClosed().subscribe(result => {
+    //   this.social.set(result.social)
+    //   console.log(`Dialog result: ${result.social}`);
+    // });
   }
 }
 

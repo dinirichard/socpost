@@ -1,17 +1,78 @@
-<form class="example-form">
-    <mat-form-field class="example-full-width">
-        <mat-label>Video Title</mat-label>
-        <input mat-dialog-title matInput >
-        <!-- <h2 mat-dialog-title>Install Angular</h2> -->
-    </mat-form-field>
-    <mat-dialog-content class="mat-typography">
-        <mat-form-field class="example-full-width">
-            <mat-label>Description</mat-label>
-            <textarea matInput></textarea>
-          </mat-form-field>
-    </mat-dialog-content>
-</form>
-<mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
-</mat-dialog-actions>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+<!-- <section class="youtube-dialog"> -->
+    <!-- <div class="dialog-title"> -->
+        <!-- <h2 >Hi </h2> -->
+        <!-- <div class="flex justify-center items-center pr-4"> -->
+            <!-- <mat-button-toggle-group -->
+                      <!-- name="Kind of Video" -->
+                      <!-- aria-label="Video Type" -->
+                      <!-- [hideSingleSelectionIndicator]="true" -->
+                      <!-- (click)="toggleNav()" -->
+                      <!-- [formControl]="formPageControl" -->
+                    <!-- > -->
+                      <!-- <mat-button-toggle value="details"> -->
+                        <!-- <span class="material-symbols-outlined"> -->
+                            <!-- page_info -->
+                            <!-- </span> -->
+                      <!-- </mat-button-toggle> -->
+                      <!-- <mat-button-toggle value="settings"> -->
+                        <!-- <mat-icon>video_settings</mat-icon> -->
+                      <!-- </mat-button-toggle> -->
+                    <!-- </mat-button-toggle-group> -->
+        <!-- </div> -->
+    <!-- </div> -->
+    <!--  -->
+    <!-- <mat-progress-bar mode="determinate" value="40"></mat-progress-bar> -->
+    <!--  -->
+            <!--  -->
+        <!-- <form class="example-form"> -->
+            <!-- <div class="sidenav" id="mySidenav"> -->
+                <!-- <div class="video-details" [hidden]="formPageControl.value === 'settings'"> -->
+                    <!-- <div> -->
+                    <!-- <mat-form-field class="video-name"> -->
+                        <!-- <mat-label>Video Title</mat-label> -->
+                        <!-- <input matInput > -->
+                    <!-- </mat-form-field> -->
+                <!-- </div> -->
+                <!-- <div> -->
+                    <!-- <mat-form-field class="video-desc"> -->
+                        <!-- <mat-label>Description</mat-label> -->
+                        <!-- <textarea matInput></textarea> -->
+                    <!-- </mat-form-field> -->
+                <!-- </div> -->
+                <!-- <div> -->
+                    <!-- Video Kind -->
+                    <!-- <mat-button-toggle-group -->
+                      <!-- name="Kind of Video" -->
+                      <!-- aria-label="Video Type" -->
+                    <!-- > -->
+                      <!-- <mat-button-toggle value="video">Video</mat-button-toggle> -->
+                      <!-- <mat-button-toggle value="short">Shorts</mat-button-toggle> -->
+                    <!-- </mat-button-toggle-group> -->
+                <!-- </div> -->
+                <!-- </div> -->
+            <!-- </div> -->
+        <!--  -->
+              <!--  -->
+            <!-- <div class="main-content"> -->
+                <!-- <button class="open-btn" (click)="toggleNav()">☰ Open Sidebar</button> -->
+                <!-- <p>Main Content Goes Here</p> -->
+            <!-- </div> -->
+        <!--  -->
+        <!-- </form> -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!-- <div align="end"> -->
+        <!-- <button mat-button mat-dialog-close>Cancel</button> -->
+        <!-- <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button> -->
+    <!-- </div> -->
+<!--  -->
+<!-- </section> -->
+
+<section>
+    <app-file-upload></app-file-upload>
+</section>
+
+

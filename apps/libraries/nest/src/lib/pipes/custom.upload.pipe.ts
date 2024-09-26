@@ -1,16 +1,17 @@
-import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from "@nestjs/common";
-import { IsArray } from "class-validator";
+import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException, Logger } from "@nestjs/common";
 
 @Injectable()
 export class CustomUploadPipe implements PipeTransform {
     async transform(value: any, metadata: ArgumentMetadata) {
+        Logger.log( value, 'value');
         if (!value) {
             throw "No file provided.";
         }
 
-        if (IsArray(value)) {
+        if (Array.isArray(value)) {
             const values = [...value];
             values.map((v) => {
+                Logger.log( v.buffer, 'file');
                 if (!v.mimetype) {
                     throw new BadRequestException("Unknown file type.");
                 }
@@ -32,6 +33,7 @@ export class CustomUploadPipe implements PipeTransform {
         if (!value.mimetype) {
             return value;
         }
+        Logger.log( value.buffer, 'file');
 
         // Set the maximum file size based on the MIME type
         // const maxSize = this.getMaxSize(value.mimetype);
