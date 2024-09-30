@@ -6,18 +6,14 @@ import { SchedulerService} from "../../services/scheduler.service";
 import {
   MAT_DIALOG_DATA,
   MatDialog,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
   MatDialogRef,
-  MatDialogTitle,
   MatDialogModule
 } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { YoutubePostComponent } from './posts/youtube.post.component';
-import { ModalService } from 'ngx-modal-ease';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 export interface DialogSocialData {
   social: string;
@@ -39,7 +35,7 @@ export interface DialogCalPostData {
     FormsModule, 
     MatDialogModule
   ],
-  providers: [SchedulerService , ModalService],
+  providers: [SchedulerService ],
   templateUrl: './scheduler.component.html',
   styleUrl: './scheduler.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,8 +46,7 @@ export class SchedulerComponent
   collasped = signal(false);
   computedCollasped = computed(() => this.collasped() ? '70px' : '250px');
   sideNavWidthOutput = output<string>();
-  // injector = inject(Injector);
-  modalService = inject(ModalService);
+  modalService = inject(NgbModal);
   
   // ngOnInit(): void {   
   // }
@@ -258,40 +253,16 @@ export class SchedulerComponent
   }
 
   openYoutubeDialog(args: any) {
-    // const dialogRef = this.dialog.open(YoutubePostComponent, {
-    //   data: { calenderArgs: args },
-    //   height: '90%',
-    //   width: '80%'
-    // });
 
-    this.modalService.open(YoutubePostComponent, {
-      modal: {
-        // animation
-        enter: 'enter-scale-down 0.1s ease-out',
-      },
-      overlay: {
-        // animation
-        leave: 'fade-out 0.3s',
-      },
-      size: {
-        // modal configuration
-        width: '400px',
-        height: '90%',
-      },
-      data: {
-        // data to ModalContentComponent
-        calenderArgs: args,
-      },
-    })
-    .then((dataFromModalContentComponent) => {
-      // this.social.set(dataFromModalContentComponent)
-      console.log(`Dialog result: ${dataFromModalContentComponent}`);
+    const modalRef = this.modalService.open(YoutubePostComponent, { 
+      centered: false,
+      size: 'xl',
+
     });
-
-    // dialogRef.afterClosed().subscribe(result => {
-    //   this.social.set(result.social)
-    //   console.log(`Dialog result: ${result.social}`);
-    // });
+    modalRef.componentInstance.calenderArgs = args;
+    modalRef.closed.subscribe( val => {
+      console.log(val)
+    });
   }
 }
 

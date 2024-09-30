@@ -2,8 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 @import './app/shared/themes/calendar_green.scss';
+@import "../../../node_modules/bulma/bulma.scss";
+
+// @import "../../../node_modules/bulma/sass/utilities/index.scss";
+// @import "../../../node_modules/bulma/sass/base/index.scss";
+// @import "../../../node_modules/bulma/sass/elements/button.scss";
+// @import "../../../node_modules/bulma/sass/elements/content.scss";
+// @import "../../../node_modules/bulma/sass/elements/title.scss";
+// @import "../../../node_modules/bulma/sass/form/index.scss";
+// @import "../../../node_modules/bulma/sass/components/navbar.scss";
+// @import "../../../node_modules/bulma/sass/layout/hero.scss";
+// @import "../../../node_modules/bulma/sass/layout/section.scss";
 
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';

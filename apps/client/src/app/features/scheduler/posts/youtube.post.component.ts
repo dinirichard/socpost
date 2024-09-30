@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, model, OnInit, output, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, effect, inject, Input, model, OnInit, output, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from "@angular/material/dialog";
 import { DialogCalPostData } from "../scheduler.component";
@@ -13,8 +13,9 @@ import {MatSliderModule} from '@angular/material/slider';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { explicitEffect } from "ngxtension/explicit-effect";
-import { ModalService } from "ngx-modal-ease";
 import { FileUploadComponent } from "../../file-uploads/single/file-upload.component";
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+// import { ToastTemplatesComponent } from "../../../shared/toast/toast-templates.component";
 
 
 @Component({
@@ -33,33 +34,29 @@ import { FileUploadComponent } from "../../file-uploads/single/file-upload.compo
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class YoutubePostComponent implements OnInit {
-    modalService = inject(ModalService);
-    // constructor( private modalService: ModalService) {
+    activeModal = inject(NgbActiveModal);
+    @Input() calenderArgs!: any;
+    // constructor( ) {
+      
     // }
-    // readonly dialogRef = inject(MatDialogRef<YoutubePostComponent>);
-    // readonly data = inject<DialogCalPostData>(MAT_DIALOG_DATA);
-    // readonly calArgs = model(this.data.calenderArgs);
-
-    // dialogRef.updateSize("300px", "300px");
+    uploadComplete = signal(false);
+    aspectRatio = signal('16:9');
+    uploadedFile: File | undefined = undefined;
 
     sideNavWidth = '80%';
-
     sideNavCollapsed = computed(() => {
         return (this.sideNavWidth === '70px')
     });
-
     collasped = signal(false);
     computedCollasped = computed(() => this.collasped() ? '70px' : '250px');
     sideNavWidthOutput = output<string>();
 
     formPageControl = new FormControl('details');
-    
+    videoKindControl = new FormControl('video');
     videoDetails = new FormGroup({
         title: new FormControl('', {validators: Validators.required}),
         description: new FormControl('', {validators: Validators.required}),
         videoKind: new FormControl('video', {validators: Validators.required}),
-
-
     })
     
     sds = effect( () => {
@@ -73,6 +70,12 @@ export class YoutubePostComponent implements OnInit {
         console.log();
     }
 
+    getUploadedFile(file: File) {
+      this.uploadedFile = file;
+      this.videoDetails.get('title')?.setValue(file.name);
+      this.videoDetails.get('videoKind')?.setValue(this.videoKindControl.value);
+    }
+
     toggleSection(sectionId: string) {
         const section = document.getElementById(sectionId);
         section?.classList.toggle('collapsed');
@@ -80,22 +83,7 @@ export class YoutubePostComponent implements OnInit {
         const otherSectionId = sectionId === 'section1' ? 'section2' : 'section1';
         const otherSection = document.getElementById(otherSectionId);
         otherSection?.classList.remove('collapsed');
-      }
-
-    //   toggleNave = effect(() => {
-    //     this.formPageControl.value;
-    //     const sidenav = document.getElementById("mySidenav");
-    //     const mainContent = document.querySelector('.main-content');
-        
-    //     sidenav?.classList.toggle("active");
-    //     mainContent?.classList.toggle("active");
-    //   });
-
-    //   animateFormSwitch = explicitEffect([], ([this.formPageControl]) => {
-    //     switchForm
-    //         ? animate(this.authList().nativeElement, { x: "0%" }, { duration: 1 })
-    //         : animate(this.authList().nativeElement, { x: "-50%" }, { duration: 1 });
-    // });
+    }
       
       toggleNav() {
         const sidenav = document.getElementById("mySidenav");
@@ -105,9 +93,15 @@ export class YoutubePostComponent implements OnInit {
         mainContent?.classList.toggle("active");
       }
 
+      toggleVideoKind() {
+          this.videoKindControl.value === 'short' 
+            ? this.aspectRatio.set('9:16') 
+            : this.aspectRatio.set('16:9')
+      }
+
       onClose() {
         // this.modalService.modalInstances
-        this.modalService.close(this.videoDetails.value);
+        // this.modalService.close(this.videoDetails.value);
       }
 
     

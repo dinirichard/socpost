@@ -30,6 +30,16 @@ import mime from "mime-types";
 export class MediaController {
     constructor(private readonly mediaService: MediaService) {}
 
+    @Post("saveUploads")
+    @UseGuards(PassportJwtAuthGuard)
+    async saveUploads(
+        @Body() body: any,
+    ) {
+        const { orgId, originalName, uploadUrl, fileType } = body;
+        Logger.log(body, 'Body');
+        return this.mediaService.saveFile(orgId, originalName, uploadUrl, fileType);
+    }
+
     @Post("uploadImage")
     @UseGuards(PassportJwtAuthGuard)
     @UseInterceptors(FileInterceptor("image"))

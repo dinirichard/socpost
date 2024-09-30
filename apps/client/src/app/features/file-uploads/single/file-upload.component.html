@@ -7,7 +7,11 @@
 </div> -->
 
 
-<div class="container" appDragDrop (fileDropped)="onFileDropped($event)">
+<div class="container" appDragDrop 
+  [style.height]="aspectRatio() === '16:9' ? '200px' : '300px'"
+  [style.width]="aspectRatio() === '16:9' ? '450px' : '233px'"
+  (fileDropped)="onFileDropped($event)"
+  >
 	<input type="file" #fileDropRef id="fileDropRef" (change)="fileBrowseHandler($event)" />
 	<mat-icon>upload</mat-icon>
 	<h3>Drag and drop file here</h3>
@@ -44,7 +48,7 @@
 			<p class="size">
 				{{ formatBytes(file?.size, 2) }}
 			</p>
-			<mat-progress-bar mode="determinate" [value]="progress()"></mat-progress-bar>
+			<mat-progress-bar [mode]="progressMode" [value]="progress()"></mat-progress-bar>
 		</div>
 
 		<div class="delete" (click)="deleteFile(i)">

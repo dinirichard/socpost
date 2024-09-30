@@ -16,7 +16,8 @@
         "index": "apps/client/src/index.html",
         "browser": "apps/client/src/main.ts",
         "polyfills": [
-          "zone.js"
+          "zone.js",
+          "@angular/localize/init"
         ],
         "tsConfig": "apps/client/tsconfig.app.json",
         "inlineStyleLanguage": "scss",

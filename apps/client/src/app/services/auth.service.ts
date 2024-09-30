@@ -1,8 +1,10 @@
-import { Injectable } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
+import { DOCUMENT } from '@angular/common';
 import { tap } from "rxjs/operators";
 import { loginDTO, registerDTO } from "../models/auth.dto";
+import { environment } from "../../environments/environment";
 
 @Injectable({
     providedIn: "root",
@@ -10,10 +12,13 @@ import { loginDTO, registerDTO } from "../models/auth.dto";
 export class AuthService {
     httpClient = inject(HttpClient);
     baseUrl = "http://localhost:3000/api";
+    localStorage: Storage | undefined;
 
-    // constructor() {
-
-    // }
+    constructor(@Inject(DOCUMENT) private docu: Document) {
+        this.localStorage = this.docu.defaultView?.localStorage;
+        console.log(this.localStorage);
+        console.log('API URL:', environment.CLOUDFLARE_BUCKET_URL);
+    }
 
     signup(data: registerDTO) {
         return this.httpClient.post(`${this.baseUrl}/auth/register`, data);
@@ -36,7 +41,9 @@ export class AuthService {
     }
 
     isLoggedIn() {
-        return localStorage.getItem("accessToken") !== null;
+        if (this.localStorage)
+            return this.localStorage.getItem("accessToken") !== null;
+        return null;
     }
 
     // encrypt(password: string): string {
