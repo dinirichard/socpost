@@ -8,8 +8,8 @@
 
 
 <div class="container" appDragDrop 
-  [style.height]="aspectRatio() === '16:9' ? '200px' : '300px'"
-  [style.width]="aspectRatio() === '16:9' ? '450px' : '233px'"
+  [style.height]="aspectRatio() === '16:9' ? '193px' : '300px'"
+  [style.width]="aspectRatio() === '16:9' ? '300px' : '233px'"
   (fileDropped)="onFileDropped($event)"
   >
 	<input type="file" #fileDropRef id="fileDropRef" (change)="fileBrowseHandler($event)" />

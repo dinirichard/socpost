@@ -61,34 +61,21 @@ export async function simpleUpload(
   contentType: string
 ) {
   try {
-  const uint8Array = new Uint8Array(data);
-  Logger.log( data, 'data');
-  const stream = new Readable({
-    read(size) {
-      if (data instanceof Buffer) {
-        if (data.byteLength === 0) {
-          this.push(null); // End of stream
-        } else {
-          this.push(data.slice(0, size));
-          data = data.slice(size);
-        }
-      }
-    },
-  });
-
-  const parallelUploads3 = new Upload({
-    client: R2upload,
-    params: {
-        Bucket: CLOUDFLARE_BUCKETNAME,
-        ACL: "public-read",
-        Key: key,
-        Body: stream,
-        ContentType: contentType,
-    },
-  },);
-
-  const www = await parallelUploads3.done();
-  Logger.log( www, 'Upload Done');
+    Logger.log( data, 'data');
+    
+    const parallelUploads3 = new Upload({
+      client: R2upload,
+      params: {
+          Bucket: CLOUDFLARE_BUCKETNAME,
+          ACL: "public-read",
+          Key: key,
+          Body: data,
+          ContentType: contentType,
+      },
+    },);
+  
+    const www = await parallelUploads3.done();
+    Logger.log( www, 'Upload Done');
   } catch (error) {
     Logger.error(error, 'Error');
     throw new Error('Error');

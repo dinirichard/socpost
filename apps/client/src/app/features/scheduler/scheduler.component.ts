@@ -14,10 +14,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { YoutubePostComponent } from './posts/youtube.post.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { SelectSocialDialogComponent } from '../../components/select-social/select-social.component';
 
-export interface DialogSocialData {
-  social: string;
-}
+
 
 export interface DialogCalPostData {
   calenderArgs: any;
@@ -239,7 +238,10 @@ export class SchedulerComponent
 
   async openSocialDialog(args: any) {
     const dialogRef = this.dialog.open(SelectSocialDialogComponent, {
-      data: {social: this.social()},
+      data: {
+        social: this.social(),
+        title: 'Select'
+      },
     });
 
     await dialogRef.afterClosed().subscribe(result => {
@@ -256,7 +258,7 @@ export class SchedulerComponent
 
     const modalRef = this.modalService.open(YoutubePostComponent, { 
       centered: false,
-      size: 'xl',
+      size: 'l',
 
     });
     modalRef.componentInstance.calenderArgs = args;
@@ -267,21 +269,3 @@ export class SchedulerComponent
 }
 
 
-@Component({
-  selector: 'app-select-social-dialog',
-  templateUrl: './select-social-dialog.html',
-  standalone: true,
-  imports: [MatDialogModule, MatButtonModule],
-  styleUrl: './select-social-dialog.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class SelectSocialDialogComponent {
-  readonly dialogRef = inject(MatDialogRef<SelectSocialDialogComponent>);
-  readonly data = inject<DialogSocialData>(MAT_DIALOG_DATA);
-  readonly social = model(this.data.social);
-
-  onSelectSocial(social: string): void {
-    this.data.social = social;
-    this.dialogRef.close(this.data);
-  }
-}

@@ -2,21 +2,21 @@
 <mat-sidenav-container>
     <mat-sidenav opened mode="side" [style.width]='sideNavWidth'> 
         
-            <div class="sidenav-header" [class.hide-header-text]='sideNavWidth === "70px"'>
-                <h3>Providers</h3>
-                <mat-divider></mat-divider>
-            </div>
+        <div class="sidenav-header" [class.hide-header-text]='sideNavWidth === "70px"'>
+            <h6>Providers</h6>
+            <mat-divider></mat-divider>
+        </div>
 
         
 
         <div class="addProvider">
             @if (sideNavWidth !== '250px') {
-                <button mat-flat-button class="add-button-collapsed">
+                <button mat-flat-button class="add-button-collapsed" (click)="addProvider()">
                     <mat-icon >add</mat-icon>
                 </button>
                 
             } @else {
-                <button mat-flat-button class="add-button">
+                <button mat-flat-button class="add-button" (click)="addProvider()">
                     <mat-icon>add</mat-icon>
                     Add Providers
                 </button>
@@ -24,11 +24,11 @@
         </div>
         <mat-divider></mat-divider>
         <mat-nav-list>
-            @for(item of menuItems(); track item.id) {
+            @for( provider of providers; track provider.id) {
                 <a mat-list-item href="/scheduler">
-                    <img matListItemIcon [width]="providerImgSize()" [height]="providerImgSize()" src='{{item.label}}.png' class="providerImg" alt='{{item.name}}' />
-                    <div matListItemTitle *ngIf="sideNavCollapsed" class="providerName">{{item.name}}</div>
-                    <div matListItemLine *ngIf="sideNavCollapsed" >Account Name</div>
+                    <img matListItemIcon [width]="providerImgSize()" [height]="providerImgSize()" [src]=" provider.picture" class="providerImg" alt='{{provider.name}}' />
+                    <div matListItemTitle *ngIf="sideNavCollapsed" class="providerName">{{provider.profile}}</div>
+                    <div matListItemLine *ngIf="sideNavCollapsed" >{{provider.name}}</div>
                 </a>
                 
             } 

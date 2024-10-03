@@ -16,8 +16,6 @@ export class AuthService {
 
     constructor(@Inject(DOCUMENT) private docu: Document) {
         this.localStorage = this.docu.defaultView?.localStorage;
-        console.log(this.localStorage);
-        console.log('API URL:', environment.CLOUDFLARE_BUCKET_URL);
     }
 
     signup(data: registerDTO) {

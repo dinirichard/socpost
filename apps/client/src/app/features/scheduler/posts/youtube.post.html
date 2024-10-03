@@ -1,97 +1,150 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-<section class="youtube-dialog" [hidden]="uploadedFile ? false : true">
-    <div class="dialog-title">
-        <h2 >Hi </h2>
-        <div class="flex justify-center items-center pr-4">
-            <mat-button-toggle-group
-              name="Kind of Video"
-              aria-label="Video Type"
-              [hideSingleSelectionIndicator]="true"
-              (click)="toggleNav()"
-              [formControl]="formPageControl"
-                >
-                <mat-button-toggle value="details">
-                  <span class="material-symbols-outlined">
-                      page_info
-                      </span>
-                </mat-button-toggle>
-                <mat-button-toggle value="settings">
-                  <mat-icon>video_settings</mat-icon>
-                </mat-button-toggle>
-            </mat-button-toggle-group>
-        </div>
-    </div>
-    <!--  -->
-    <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
+<section class="p-7">
     
-            
-        <form class="example-form">
-            <div class="sidenav" id="mySidenav">
-                <div class="video-details" [hidden]="formPageControl.value === 'settings'">
-                    <div>
-                    <mat-form-field class="video-name">
-                        <mat-label>Video Title</mat-label>
-                        <input matInput >
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field class="video-desc">
-                        <mat-label>Description</mat-label>
-                        <textarea matInput></textarea>
-                    </mat-form-field>
-                </div>
-                <div>
-                    Video Kind
+    <div class="youtube-dialog" [hidden]="uploadedFile ? false : true">
+        <div class="dialog-title columns is-mobile">
+            <div class="column is-1">
+                <figure class="image is-48x48">
+                    <img class="is-rounded" src="https://bulma.io/assets/images/placeholders/48x48.png" />
+                </figure>
+            </div>
+            <h6 class="column video-title">{{this.videoDetails.get('title')?.value}}</h6>
+            <div class="column is-2">
+                <div class="flex justify-center items-center pr-4">
                     <mat-button-toggle-group
                       name="Kind of Video"
                       aria-label="Video Type"
-                    >
-                      <mat-button-toggle value="video">Video</mat-button-toggle>
-                      <mat-button-toggle value="short">Shorts</mat-button-toggle>
+                      [hideSingleSelectionIndicator]="true"
+                      (click)="toggleNav()"
+                      [formControl]="formPageControl"
+                        >
+                        <mat-button-toggle value="details">
+                          <span class="material-symbols-outlined">
+                              page_info
+                              </span>
+                        </mat-button-toggle>
+                        <mat-button-toggle value="settings">
+                          <mat-icon>video_settings</mat-icon>
+                        </mat-button-toggle>
                     </mat-button-toggle-group>
                 </div>
+            </div>
+        </div>
+        <!--  -->
+        <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
+
+        <div class="upload-content columns is-3 pt-3">
+            <div class="upload-form column is-two-thirds">
+                <form class="example-form" (ngSubmit)="onSubmit()" [formGroup]="videoDetails">
+                    <div class="video-details" id="">
+                        <div class="" [hidden]="formPageControl.value === 'settings'">
+                            <mat-form-field class="video-name" >
+                                <mat-label>Video Title</mat-label>
+                                <input matInput type="text" formControlName="title">
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <mat-form-field class="video-desc" >
+                                <mat-label>Description</mat-label>
+                                <textarea matInput formControlName="description"></textarea>
+                            </mat-form-field>
+                        </div>
+                        <div  class="video-kids">
+                            Made for Kids?
+                            <label class="example-margin"></label>
+                            <mat-radio-group formControlName="forKids">
+                                <mat-radio-button class="" [value]="true">True</mat-radio-button>
+                                <mat-radio-button class="" [value]="false">False</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div  class="video-tags">
+                            <mat-form-field class="video-tags" >
+                                <mat-label>Tags</mat-label>
+                                <input matInput type="text" formControlName="tags">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                
+                
+                    <!-- <div class="main-content">
+                        <button class="open-btn" (click)="toggleNav()">☰ Open Sidebar</button>
+                        <p>Main Content Goes Here</p>
+                    </div> -->
+                
+                </form>
+            </div>
+            <div class="upload-media column">
+                <div>
+                    @if (aspectRatio()  === '16:9') {
+                        <figure class="image is-16by9 normal-video">
+                            <!-- <video
+                            #video
+                            muted
+                            playsinline
+                            loop
+                            autoplay
+                            src="https://d85hka1o93tql.cloudfront.net/tools-homepage.mp4"
+                            > 
+                            </video> -->
+                            <img src="https://bulma.io/assets/images/placeholders/640x360.png" />
+                        </figure>
+
+                    <!-- <mat-slider [style.width]="'330px'" min="0" max="100" showTickMarks discrete [displayWith]="formatLabel">
+                        <input matSliderThumb [(ngModel)]="videoSlider()">
+                    </mat-slider> -->
+                    } @else {
+                        <figure class="image is-9by16 shorts-video">
+                          <img src="https://bulma.io/assets/images/placeholders/360x640.png" />
+                            <!-- <video
+                              #video
+                              muted
+                              playsinline
+                              loop
+                              autoplay
+                              src="https://d85hka1o93tql.cloudfront.net/tools-homepage.mp4"
+                            > 
+                            </video> -->
+                        </figure>
+                    }
                 </div>
+                
             </div>
-        
-              
-            <div class="main-content">
-                <button class="open-btn" (click)="toggleNav()">☰ Open Sidebar</button>
-                <p>Main Content Goes Here</p>
-            </div>
-        
-        </form>
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!-- <div align="end"> -->
-        <!-- <button mat-button mat-dialog-close>Cancel</button> -->
-        <!-- <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button> -->
-    <!-- </div> -->
+        </div>
+        <!--  -->
+        <!--  -->
+        <!--  -->
+        <!--  -->
+        <!-- <div align="end"> -->
+            <!-- <button mat-button mat-dialog-close>Cancel</button> -->
+            <!-- <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button> -->
+        <!-- </div> -->
+    </div>
 <!--  -->
+
+    <div [hidden]="uploadedFile ? true : false" class="columns is-tablet m-2 is-5 ">
+        <div class="cloumn is-one-third-tablet">
+            <mat-button-toggle-group
+                  name="Kind of Video"
+                  aria-label="Video Type"
+                  [hideSingleSelectionIndicator]="true"
+                  (click)="toggleVideoKind()"
+                  [formControl]="videoKindControl"
+                    >
+                    <mat-button-toggle value="video">
+                        Video
+                    </mat-button-toggle>
+                    <mat-button-toggle value="short">
+                        Short
+                    </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+        <div class="column">
+            <app-file-upload [aspectRatio]="aspectRatio()" (uploadFile)="getUploadedFile($event)"></app-file-upload>
+        </div>
+
+    </div>
 </section>
 
-<section>
-    <div [hidden]="uploadedFile ? true : false">
-        <mat-button-toggle-group
-              name="Kind of Video"
-              aria-label="Video Type"
-              [hideSingleSelectionIndicator]="true"
-              (click)="toggleVideoKind()"
-              [formControl]="videoKindControl"
-                >
-                <mat-button-toggle value="video">
-                    Video
-                </mat-button-toggle>
-                <mat-button-toggle value="short">
-                    Short
-                </mat-button-toggle>
-            </mat-button-toggle-group>
-    </div>
-    <div>
-        <app-file-upload [aspectRatio]="aspectRatio()" (uploadFile)="getUploadedFile($event)"></app-file-upload>
-    </div>
-    
-</section>
+
 
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 // import { IntegrationManager } from '@socpost/libraries/nest/lib/integrations/integration.manager';
 import { DatabaseService } from '../../database/database.service';
 import { Prisma } from '@prisma/client';
@@ -8,6 +8,7 @@ import { makeId } from '@socpost/libraries/nest/lib/services/make.is';
 import { SocialProvider } from '@socpost/libraries/nest/lib/integrations/socials/social.integrations.interface';
 import { IntegrationManager } from '@socpost/libraries/nest/lib/integrations/integration.manager';
 import { simpleUpload } from '../upload/v1.uploader';
+import { ProviderResponse } from './integration.dto';
 
 @Injectable()
 export class IntegrationsService {
@@ -28,20 +29,37 @@ export class IntegrationsService {
     });
   }
 
-  async findAll() {
-    return this.databaseService.integration.findMany({});
+  async findAllByOrg(orgId: string) {
+    try {
+        const response = await this.databaseService.integration.findMany({
+          where: {
+            organizationId: orgId,
+            deletedAt: null,
+          }
+        });
+
+        return response.map( integrat => {
+          return integrat as ProviderResponse;
+        })
+      } catch (error) {
+        throw new InternalServerErrorException(error, 'There was an error accessing the database');
+    }
   }
 
   async findOne(id: string) {
-    return this.databaseService.integration.findUnique({
-      where: {
-        id,
-      }
-    });
+    try{
+        return await this.databaseService.integration.findUnique({
+          where: {
+            id,
+          }
+        }) as ProviderResponse;
+      } catch (error) {
+        throw new InternalServerErrorException(error, 'There was an error accessing the database');
+    }
   }
 
   async update(id: string, updateIntegrationDto: Prisma.IntegrationUpdateInput) {
-    return this.databaseService.integration.update({
+    return await this.databaseService.integration.update({
       where: {
         id,
       },
@@ -59,41 +77,47 @@ export class IntegrationsService {
     provider: string,
     token: string,
     refreshToken = '',
-    expiresIn?: Date,
+    expiresIn,
     username?: string,
     isBetweenSteps = false,
     refresh?: string,
     timezone?: number
   ) {
-    const loadImage = await axios.get(picture, { responseType: 'arraybuffer' });
-    const uploadedPicture = await simpleUpload(
-      loadImage.data,
-      `${makeId(10)}.png`,
-      'image/png'
-    );
-
-    return this.databaseService.integration.create({
-        data: {
-            name,
-            picture,
-            type,
-            internalId,
-            token,
-            refreshToken,
-            providerIdentifier : provider,
-            tokenExpiration : expiresIn,
-            // username,
-            inBetweenSteps : isBetweenSteps,
-            // refresh,
-            // timezone
-            organization: {
-              connect: {
-                  id: org
+    try {
+        const loadImage = await axios.get(picture, { responseType: 'arraybuffer' });
+        const uploadedPicture = await simpleUpload(
+          loadImage.data,
+          `${makeId(10)}.png`,
+          'image/png'
+        );
+      
+        const createdResponse = await this.databaseService.integration.create({
+            data: {
+                name,
+                picture: uploadedPicture,
+                type,
+                internalId,
+                token,
+                refreshToken,
+                providerIdentifier : provider,
+                profile: username,
+                inBetweenSteps : isBetweenSteps,
+                tokenExpiration: new Date(Date.now() + expiresIn * 1000),
+                // refresh,
+                // timezone
+                refreshNeeded: false,
+                organization: {
+                  connect: {
+                      id: org
+                  }
               }
-          }
-        }
+            }
+        });
+
+        return createdResponse as ProviderResponse;
+    } catch(error) {
+      throw new InternalServerErrorException(error, 'There was an error accessing the database');
     }
-    );
   }
 
   getIntegrationsList(org: string) {
@@ -104,13 +128,17 @@ export class IntegrationsService {
     })
   }
 
-  getIntegrationById(org: string, id: string) {
-    return this.databaseService.integration.findFirst({
-      where: {
-        id,
-        organizationId: org,
-      }
-    });
+  async getIntegrationById(org: string, id: string) {
+    try {
+        return await this.databaseService.integration.findFirst({
+          where: {
+            id,
+            organizationId: org,
+          }
+        }) as ProviderResponse;
+    } catch(error) {
+      throw new InternalServerErrorException(error, 'There was an error accessing the database');
+    }
   }
 
   async refreshToken(provider: SocialProvider, refresh: string) {
@@ -203,6 +231,7 @@ export class IntegrationsService {
         integration.providerIdentifier,
         accessToken,
         refreshToken,
+        expiresIn
       );
     }
   }

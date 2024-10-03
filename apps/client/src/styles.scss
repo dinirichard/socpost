@@ -3,16 +3,23 @@
 @tailwind utilities;
 @import './app/shared/themes/calendar_green.scss';
 @import "../../../node_modules/bulma/bulma.scss";
+@import "../../../node_modules/bulma/css/bulma.css";
 
 // @import "../../../node_modules/bulma/sass/utilities/index.scss";
-// @import "../../../node_modules/bulma/sass/base/index.scss";
+@import "../../../node_modules/bulma/sass/base/skeleton.scss";
+@import "../../../node_modules/bulma/sass/helpers/spacing.scss";
+@import "../../../node_modules/bulma/sass/helpers/gap.scss";
+@import "../../../node_modules/bulma/sass/helpers/position.scss";
 // @import "../../../node_modules/bulma/sass/elements/button.scss";
-// @import "../../../node_modules/bulma/sass/elements/content.scss";
+@import "../../../node_modules/bulma/sass/elements/content.scss";
 // @import "../../../node_modules/bulma/sass/elements/title.scss";
+@import "../../../node_modules/bulma/sass/elements/image.scss";
 // @import "../../../node_modules/bulma/sass/form/index.scss";
 // @import "../../../node_modules/bulma/sass/components/navbar.scss";
 // @import "../../../node_modules/bulma/sass/layout/hero.scss";
 // @import "../../../node_modules/bulma/sass/layout/section.scss";
+@import "../../../node_modules/bulma/sass/layout/level.scss";
+@import "../../../node_modules/bulma/sass/grid/columns.scss";
 
 /* You can add global styles to this file, and also import other style files */
 

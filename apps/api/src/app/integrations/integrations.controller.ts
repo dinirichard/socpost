@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseFilters } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseFilters, Logger } from '@nestjs/common';
 import { IntegrationsService } from './integrations.service';
 import { Prisma } from '@prisma/client';
 import { IntegrationManager } from '@socpost/libraries/nest/lib/integrations/integration.manager';
@@ -18,9 +18,14 @@ export class IntegrationsController {
     return this.integrationsService.create(createIntegrationDto);
   }
 
-  @Get()
-  findAll() {
-    return this.integrationsService.findAll();
+  @Get('/list')
+  findAll(
+    @Param('orgId') orgId: string,
+    req: Request,
+  ) {
+    Logger.log(orgId, 'orgId');
+    Logger.log(req, 'Request');
+    return this.integrationsService.findAllByOrg(orgId);
   }
 
   @Get(':id')
@@ -34,6 +39,8 @@ export class IntegrationsController {
     @Param('integration') integration: string,
     @Query('refresh') refresh: string
   ) {
+    Logger.log(integration, 'integration');
+
     if (
       !this.integrationManager
         .getAllowedSocialsIntegrations()
@@ -44,11 +51,11 @@ export class IntegrationsController {
 
     const integrationProvider =
       this.integrationManager.getSocialIntegration(integration);
-    const { codeVerifier, state, url } =
+    const authDetails =
       await integrationProvider.generateAuthUrl(refresh);
-    await ioRedis.set(`login:${state}`, codeVerifier, 'EX', 300);
+    await ioRedis.set(`login:${authDetails.state}`, authDetails.codeVerifier, 'EX', 300);
 
-    return { url };
+    return authDetails;
   }
 
   @Post('/social/:integration/connect')
@@ -67,8 +74,13 @@ export class IntegrationsController {
     ) {
       throw new Error('Integration not allowed');
     }
+    Logger.log(body.code, 'ConnectIntegrationDto');
+    Logger.log(body.refresh, 'ConnectIntegrationDto');
+    Logger.log(body.state, 'ConnectIntegrationDto');
+    Logger.log(body.timezone, 'ConnectIntegrationDto');
 
     const getCodeVerifier = await ioRedis.get(`login:${body.state}`);
+    Logger.log(getCodeVerifier, 'getCodeVerifier');
     if (!getCodeVerifier) {
       throw new Error('Invalid state');
     }
@@ -104,8 +116,7 @@ export class IntegrationsController {
       integration,
       accessToken,
       refreshToken,
-      // expiresIn,
-      new Date(),
+      expiresIn ? expiresIn : 999999999,
       username,
       integrationProvider.isBetweenSteps,
       body.refresh,

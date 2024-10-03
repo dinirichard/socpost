@@ -5,7 +5,6 @@ import { DragDropDirectiveModule } from "../drag-drop.directive";
 import { MatProgressBarModule, ProgressBarMode } from "@angular/material/progress-bar";
 import { FileUploadService } from "../file-upload.service";
 import { Observable } from "rxjs";
-import { HttpEventType, HttpResponse } from "@angular/common/http";
 import { UploadService } from "../../../services/upload.service";
 import { toast as superToast, toast } from 'bulma-toast';
 
@@ -71,7 +70,7 @@ export class FileUploadComponent {
                             console.log('aspectRatio:', aspectRatio);
                             this.toaster(`The video must have ${this.aspectRatio()} aspect ratio.`, 'is-danger');
                         }
-                      });
+                    });
                 } else {
                     console.log('YouTube accepts only mp4 video formats', item.type);
                     this.toaster('YouTube accepts only mp4 video formats', 'is-danger');
@@ -100,49 +99,49 @@ export class FileUploadComponent {
         console.log(this.currentFile, 'This is the file');
         if ((item.size / (1 * 1024 * 1024)) < 10 ) {
             this.uploadFile.emit(this.currentFile);
-            this.upService.simpleImageUpload(item)
-            .then(
-                (event: any) => {
-                    console.log( event, 'event');
-                    this.progressMode = 'determinate';
-                    this.uploadComplete = true;
-                    this.toaster('The file has been uploaded!', 'is-success');
-                },
-                (err: any) => {
-                    console.log(err);
-                    this.toaster('Could not upload the file!', 'is-danger');
-                    this.progressMode = 'determinate';
-                    this.progress.set(0);
-                    this.currentFile = undefined;
+            // this.upService.simpleImageUpload(item)
+            // .then(
+            //     (event: any) => {
+            //         console.log( event, 'event');
+            //         this.progressMode = 'determinate';
+            //         this.uploadComplete = true;
+            //         this.toaster('The file has been uploaded!', 'is-success');
+            //     },
+            //     (err: any) => {
+            //         console.log(err);
+            //         this.toaster('Could not upload the file!', 'is-danger');
+            //         this.progressMode = 'determinate';
+            //         this.progress.set(0);
+            //         this.currentFile = undefined;
                     
-                    if (err.error && err.error.message) {
-                      this.toaster(err.error.message, 'is-success');
-                    }
+            //         if (err.error && err.error.message) {
+            //           this.toaster(err.error.message, 'is-success');
+            //         }
                 
-                }
-            );
+            //     }
+            // );
         } else {
             this.uploadFile.emit(this.currentFile);
-            this.upService.largeMediaUpload(item)
-            .then(
-                (event: any) => {
-                    console.log( event, 'event');
-                    this.progressMode = 'determinate';
-                    this.uploadComplete = true;
-                    this.toaster('The file has been uploaded!', 'is-success');
-                },
-                (err: any) => {
-                    console.log(err);
-                    this.toaster('Could not upload the file!', 'is-danger');
-                    this.progressMode = 'determinate';
-                    this.progress.set(0);
-                    this.currentFile = undefined;
+            // this.upService.largeMediaUpload(item)
+            // .then(
+            //     (event: any) => {
+            //         console.log( event, 'event');
+            //         this.progressMode = 'determinate';
+            //         this.uploadComplete = true;
+            //         this.toaster('The file has been uploaded!', 'is-success');
+            //     },
+            //     (err: any) => {
+            //         console.log(err);
+            //         this.toaster('Could not upload the file!', 'is-danger');
+            //         this.progressMode = 'determinate';
+            //         this.progress.set(0);
+            //         this.currentFile = undefined;
                   
-                    if (err.error && err.error.message) {
-                      this.toaster(err.error.message, 'is-success');
-                    }
-                }
-            )
+            //         if (err.error && err.error.message) {
+            //           this.toaster(err.error.message, 'is-success');
+            //         }
+            //     }
+            // );
         }
     //   this.uploadFilesSimulator(0);
     }
@@ -218,7 +217,7 @@ export class FileUploadComponent {
             dismissible: true,
             animate: { in: 'fadeIn', out: 'fadeOut' },
             position: 'top-right',
-            duration: 1500,
+            duration: 15,
             pauseOnHover: true,
           });
     }
