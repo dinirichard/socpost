@@ -24,17 +24,26 @@
         </div>
         <mat-divider></mat-divider>
         <mat-nav-list>
-            @for( provider of providers; track provider.id) {
-                <a mat-list-item href="/scheduler">
-                    <img matListItemIcon [width]="providerImgSize()" [height]="providerImgSize()" [src]=" provider.picture" class="providerImg" alt='{{provider.name}}' />
-                    <div matListItemTitle *ngIf="sideNavCollapsed" class="providerName">{{provider.profile}}</div>
-                    <div matListItemLine *ngIf="sideNavCollapsed" >{{provider.name}}</div>
-                </a>
-                
-            } 
-            @empty {
-                <p>There are no linked providers</p>
+            @if (providerStore.isLoading()) {
+                <p>Loading...</p>
+            } @else {
+                @for( provider of providerStore.providers(); track provider.id) {
+                    <!--! Convert to Mat-List -->
+                    <a mat-list-item href="/scheduler">
+                        <img matListItemIcon [src]=" provider.picture" class="providerImg" alt='{{provider.name}}' />
+                        <img matListItemIcon class="provider-image"
+                            [src]="provider.providerIdentifier + '.png'" [alt]='provider.providerIdentifier' />
+                        
+                        <div matListItemTitle *ngIf="sideNavCollapsed" class="providerName" >{{provider.name}}</div>
+                        <div matListItemLine *ngIf="sideNavCollapsed" >{{provider.providerIdentifier}}</div>
+                    </a>
+                    
+                } 
+                @empty {
+                    <p>There are no linked providers</p>
+                }
             }
+            
         </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content class="content" [style.margin-left]="sideNavWidth">

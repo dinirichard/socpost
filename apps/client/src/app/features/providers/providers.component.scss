@@ -24,14 +24,34 @@ mat-sidenav-container {
 }
 
 .providerImg {
+    anchor-name: --i-profileImg;
     object-fit: fit;
+
     // background-color: aliceblue;
 }
 
+.provider-image {
+    // anchor-default: --i-profileImg;
+    position: absolute;
+    bottom: anchor(bottom);
+    left: anchor(right);
+    
+    
+    &.mat-mdc-list-item-icon.provider-image.mdc-list-item__start {
+        margin: 0px 0px 0px 0px;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+        margin-left: 30px;
+        margin-top: 34px;
+        height: 35px;
+        width:  35px;
+    }
+}
+
 img.mat-mdc-list-item-icon.providerImg.mdc-list-item__start {
-    margin: 0px 16px;
-    height: 50px;
-    width: 50px;
+    margin: 0px 16px 0px 0px;
+    height: 65px;
+    width: 53px;
     align-self: center;
 }
 

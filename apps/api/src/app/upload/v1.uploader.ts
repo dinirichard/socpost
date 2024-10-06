@@ -56,7 +56,7 @@ export default async function handleR2Upload(
 }
 
 export async function simpleUpload(
-  data: Multer.File | Buffer,
+  data: Multer.File | Buffer | ArrayBuffer,
   key: string,
   contentType: string
 ) {

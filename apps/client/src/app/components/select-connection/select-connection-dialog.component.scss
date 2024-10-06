@@ -1,0 +1,80 @@
+.container {
+	margin: 30px auto;
+
+	display: grid;
+	grid-template-rows: repeat(auto-fit, minmax(80px, min-content));
+	grid-template-columns: repeat(70px, 70px);
+
+	width: 90%;
+	grid-template-columns: repeat(auto-fit, minmax(60px, min-content));
+    row-gap: 10px;
+    column-gap: 10px;
+}
+
+.provider-head {
+	transition: transform 0.3s;
+	position: relative;
+	margin: aoto auto;
+}
+.provider-head:hover {
+	transform: scale(1.2);
+}
+
+.profile-img {
+	width: 50px;
+	height: 50px;
+	@media (max-width: 640px) {
+			width: 50px;
+			height: 50px;
+	}
+
+}
+
+.provider-img {
+	position: absolute;
+	transition: transform 0.3s;
+	width: 35px;
+	height: 35px;
+	margin-left: 30px;
+	margin-top: 34px;
+	z-index: 5;
+	@media (max-width: 640px) {
+			width: 35px;
+			height: 35px;
+	}
+}
+
+.item {
+	// font-family: sans-serif;
+	font-size: 1rem;
+    overflow: hidden;
+    
+
+	
+
+	// &--1 {
+	// 	background-color: crimson;
+	// }
+	// &--2 {
+	// 	background-color: white;
+	// }
+	// &--3 {
+	// 	background-color: blueviolet;
+	// }
+	// &--4 {
+	// 	background-color: goldenrod;
+	// }
+	// &--5 {
+	// 	background-color: royalblue;
+	// }
+	// &--6 {
+	// 	background-color: lightcoral;
+	// }
+	// &--7 {
+	// 	background-color: palevioletred;
+	// }
+	// &--8 {
+	// 	background-color: orangered;
+	// }
+}
+

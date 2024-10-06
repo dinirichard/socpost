@@ -4,6 +4,7 @@ import { AnalyticsData, AuthTokenDetails, GenerateAuthUrlResponse, PostDetails, 
 import { makeId } from '../../services/make.is';
 import { url } from 'inspector';
 import { SocialAbstract } from '../social.abstract';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 // import * as process from 'node:process';
 
 const clientAndYoutube = () => {
@@ -97,41 +98,52 @@ const clientAndYoutube = () => {
       code: string; 
       codeVerifier: string; 
       refresh?: string; 
-    }): Promise<AuthTokenDetails> {
+    })
+    // : Promise<AuthTokenDetails> 
+    {
       const { client, oauth2 } = clientAndYoutube();
-      const { tokens } = await client.getToken(params.code)
-      client.setCredentials(tokens);
-      const { scopes } = await client.getTokenInfo(tokens.access_token!);
-      this.checkScopes(this.scopes, scopes);
+      Logger.log(`${params.code} ::::: ${params.codeVerifier}`, 'combine');
+      // try {
+          const { tokens } = await client.getToken({
+              code: params.code,
+              // codeVerifier: params.codeVerifier,
+              // client_id: process.env['YOUTUBE_CLIENT_ID'],
+              // redirect_uri: `${process.env['FRONTEND_URL']}/integrations/social/youtube`,
+          });
+          client.setCredentials(tokens);
+          Logger.log(tokens);
+          const { scopes } = await client.getTokenInfo(tokens.access_token!);
+          this.checkScopes(this.scopes, scopes);
+          Logger.log(scopes);
+          const user = oauth2(client);
+          const { data } =await user.userinfo.get();
+          Logger.log(data);
+          const expiryDate = new Date(tokens.expiry_date!);
+          const unixTimestamp =
+            Math.floor(expiryDate.getTime() / 1000) -
+            Math.floor(new Date().getTime() / 1000);
 
-      const user = oauth2(client);
-      const { data } =await user.userinfo.get();
-
-      const expiryDate = new Date(tokens.expiry_date!);
-      const unixTimestamp =
-        Math.floor(expiryDate.getTime() / 1000) -
-        Math.floor(new Date().getTime() / 1000);
-
-        return {
-          accessToken: tokens.access_token!,
-          expiresIn: unixTimestamp,
-          refreshToken: tokens.refresh_token!,
-          id: data.id!,
-          name: data.name!,
-          picture: data.picture!,
-        };
-
+          return {
+              accessToken: tokens.access_token!,
+              expiresIn: unixTimestamp,
+              refreshToken: tokens.refresh_token!,
+              id: data.id!,
+              name: data.name!,
+              picture: data.picture!,
+          };
+      // } catch(error) {
+          // Logger.error(error, 'Authentication Error');
+          // throw new InternalServerErrorException(error, 'Authentication error');
+      // }
+      
     }
 
-
-
-
-    //FIXME: Wrtie the code to post
+    //! FIXME: Wrtie the code to post
     post(id: string, accessToken: string, postDetails: PostDetails[]): Promise<PostResponse[]> {
       throw new Error('Method not implemented.');
     }
 
-    //FIXME: Wrtie the code to get analytics data
+    //! FIXME: Wrtie the code to get analytics data
     analytics?(id: string, accessToken: string, date: number): Promise<AnalyticsData[]> {
       throw new Error('Method not implemented.');
     }

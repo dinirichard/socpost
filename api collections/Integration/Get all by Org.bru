@@ -1,0 +1,15 @@
+meta {
+  name: Get all by Org
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:3000/api/integrations/list?orgId=ec31ea30-0ca0-4f14-8eeb-a9b62a5b4aa6
+  body: none
+  auth: none
+}
+
+params:query {
+  orgId: ec31ea30-0ca0-4f14-8eeb-a9b62a5b4aa6
+}

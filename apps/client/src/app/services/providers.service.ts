@@ -1,65 +1,70 @@
-import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Inject, inject, Injectable } from '@angular/core';
-import { makeId } from '@socpost/libraries/nest/lib/services/make.is';
-import { ProviderItem } from '../models/provider.dto';
+import { afterRender, Inject, inject, Injectable } from '@angular/core';
+import { Provider } from '../models/provider.dto';
 import { map, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProvidersService {
-  httpClient = inject(HttpClient);
-  baseUrl = "http://localhost:3000/api/integrations";
-  localStorage: Storage | undefined;
-  orgId = '';
+    httpClient = inject(HttpClient);
+    // readonly providerStore = inject(ProvidersStore);
+    // storage = inject(BrowserStorageServerService);
+    baseUrl = "http://localhost:3000/api/integrations";
+    orgId: string | null = null;
 
-  constructor(@Inject(DOCUMENT) private docu: Document) {
-      this.localStorage = this.docu.defaultView?.localStorage;
-      if ( localStorage.getItem('orgId') ) {
-        this.orgId = String(localStorage.getItem('orgId'));
-      }
-  }
+    constructor(private router: Router, 
+      // private providerStore: ProvidersStore
+    ) {
 
-  getAllProviders(): Observable<ProviderItem[]> {
-    console.log(this.orgId, 'this.orgId');
-    const params = new HttpParams()
-      .set('orgId', this.orgId);
-    return this.httpClient.get<ProviderItem[]>( this.baseUrl + '/list', { params: {
-      ['orgId']: this.orgId,
-    } } );
-  }
+    }
 
-  connectToSocial(provider: string): Observable<ProviderItem> {
-    console.log(provider, 'connectToSocial provider');
-    const integrationAuthDetails = this.getIntegrationUrl(provider);
-    // if (integrationAuthDetails) {
-    console.log(integrationAuthDetails, 'integrationAuthDetails');
-    return  this.httpClient.post<ProviderItem>(`${this.baseUrl}/social/${provider}/connect`, {
-                code: integrationAuthDetails.code,
-                state: integrationAuthDetails.state,
-                orgId: this.localStorage ? this.localStorage.getItem("accessToken") : undefined,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                refresh: undefined,
-            });
-  }
+    getAllProviders(orgId: string): Observable<Provider[]> {
+        // console.log(this.orgId, 'this.orgId');
+        const org = orgId === '' ? localStorage.getItem('orgId') : orgId;
 
-  getIntegrationUrl(provider: string) {
-    let responseData: any;
-    const params = new HttpParams()
-      .set('integration', provider);
-    this.httpClient.post(`${this.baseUrl}/social/${provider}`, { params: {
-      ['integration']: provider,
-    } }).subscribe( {
-      next: (data: any) => {
-          console.log(data);
-          responseData = data;
-      },
-      error: (err) => {
-        console.log(err); 
-      }
-    });
-    return responseData;
-  }
+        return this.httpClient.get<Provider[]>( this.baseUrl + '/list', { 
+          params: {
+              ['orgId']: org ? org : '',
+          } 
+        });
+    }
+
+    connectToSocial(provider: string, code: string, state: string): Observable<Provider> {
+      const date = new Date();
+      const timezoneOffset = date.getTimezoneOffset();
+        console.log(`provider: ${provider}\n
+          state: ${state} \n
+          state: ${code} \n
+          Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone} \n
+          orgID: ${this.orgId}\n`, 'Connect body');
+
+        return this.httpClient.post<Provider>(`${this.baseUrl}/social/${provider}/connect`, {
+                    code: code,
+                    state: state,
+                    orgId: localStorage ? localStorage.getItem('orgId') : '',
+                    timezone: timezoneOffset.toString(),
+                    refresh: undefined,
+                });
+    }
+
+    getIntegrationUrl(provider: string) {
+        let responseData: any;
+        this.httpClient.get(`${this.baseUrl}/social/${provider}`).subscribe( {
+            next: (data: any) => {
+                console.log(data);
+                responseData = data;
+                window.location.href = responseData.url;
+            },
+            error: (err) => {
+              console.log(err); 
+            }
+        });
+
+
+
+        return responseData;
+    }
 
 }

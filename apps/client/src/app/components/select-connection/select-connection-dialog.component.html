@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>{{data.title}} Social</h2>
+<mat-dialog-content class="mat-typography">
+
+    <div class="container">
+        @for( provider of providerStore.providers(); track provider.id) {
+            <div class="item item--1 " (click)="onSelectSocial('youtube')" >
+                <div class="provider-head grid has-1-cols-mobile is-align-self-center">
+                    <img class="profile-img cell" [src]="provider.picture" alt="profile Image">
+                    <img class="provider-img cell" [src]="provider.providerIdentifier + '.png'" [alt]="provider.providerIdentifier">
+                </div>
+                <div class="is-align-self-center">{{provider.name}}</div>
+            </div>
+        }
+    </div>
+
+</mat-dialog-content>
+<!-- 
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Cancel</button>
+        <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
+    </mat-dialog-actions> 
+-->

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseFilters, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseFilters, Logger, Req } from '@nestjs/common';
 import { IntegrationsService } from './integrations.service';
 import { Prisma } from '@prisma/client';
 import { IntegrationManager } from '@socpost/libraries/nest/lib/integrations/integration.manager';
@@ -20,8 +20,8 @@ export class IntegrationsController {
 
   @Get('/list')
   findAll(
-    @Param('orgId') orgId: string,
-    req: Request,
+    @Query('orgId') orgId: string,
+    @Req() req: Request,
   ) {
     Logger.log(orgId, 'orgId');
     Logger.log(req, 'Request');
@@ -54,6 +54,9 @@ export class IntegrationsController {
     const authDetails =
       await integrationProvider.generateAuthUrl(refresh);
     await ioRedis.set(`login:${authDetails.state}`, authDetails.codeVerifier, 'EX', 300);
+    Logger.log(authDetails.url, 'authDetails url');
+    Logger.log(authDetails.codeVerifier, 'authDetails codeVerifier');
+    Logger.log(authDetails.state, 'authDetails state');
 
     return authDetails;
   }
@@ -64,7 +67,6 @@ export class IntegrationsController {
   async connectSocialMedia(
     // @GetOrgFromRequest() org: Organization,
     @Param('integration') integration: string,
-    @Param('org') org: string,
     @Body() body: ConnectIntegrationDto
   ) {
     if (
@@ -74,10 +76,11 @@ export class IntegrationsController {
     ) {
       throw new Error('Integration not allowed');
     }
-    Logger.log(body.code, 'ConnectIntegrationDto');
-    Logger.log(body.refresh, 'ConnectIntegrationDto');
-    Logger.log(body.state, 'ConnectIntegrationDto');
-    Logger.log(body.timezone, 'ConnectIntegrationDto');
+    Logger.log(body.code, 'ConnectIntegrationDto code');
+    Logger.log(body.refresh, 'ConnectIntegrationDto refresh');
+    Logger.log(body.state, 'ConnectIntegrationDto state');
+    Logger.log(body.orgId, 'ConnectIntegrationDto orgId');
+    Logger.log(body.timezone, 'ConnectIntegrationDto timezone');
 
     const getCodeVerifier = await ioRedis.get(`login:${body.state}`);
     Logger.log(getCodeVerifier, 'getCodeVerifier');
@@ -97,7 +100,8 @@ export class IntegrationsController {
       name,
       picture,
       username,
-    } = await integrationProvider.authenticate({
+    } = 
+    await integrationProvider.authenticate({
       code: body.code,
       codeVerifier: getCodeVerifier,
       refresh: body.refresh,
@@ -108,7 +112,7 @@ export class IntegrationsController {
     }
 
     return this.integrationsService.createOrUpdateIntegration(
-      org,
+      body.orgId,
       name,
       picture,
       'social',

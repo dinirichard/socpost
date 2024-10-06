@@ -16,6 +16,8 @@ import {MatRadioModule} from '@angular/material/radio';
 import { explicitEffect } from "ngxtension/explicit-effect";
 import { FileUploadComponent } from "../../file-uploads/single/file-upload.component";
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Post } from "../../../models/post.dto";
+import { ProvidersStore } from "../../../core/signal-states/providers.state";
 // import { ToastTemplatesComponent } from "../../../shared/toast/toast-templates.component";
 
 
@@ -31,12 +33,14 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
         MatButtonToggleModule, MatCheckboxModule,
         MatRadioModule, MatSliderModule
     ],
+    providers: [ ProvidersStore ],
     templateUrl: "./youtube.post.html",
     styleUrl: "./youtube.post.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class YoutubePostComponent implements OnInit {
     activeModal = inject(NgbActiveModal);
+    readonly store = inject(ProvidersStore);
     @Input() calenderArgs!: any;
 
     // videoMedia = document.querySelector("video");
@@ -62,7 +66,7 @@ export class YoutubePostComponent implements OnInit {
 
     formPageControl = new FormControl('details');
     videoKindControl = new FormControl('video');
-    videoDetails = new FormGroup({
+    postDetails = new FormGroup({
         title: new FormControl('', {validators: Validators.required}),
         description: new FormControl('', {validators: Validators.required}),
         videoKind: new FormControl('video', {validators: Validators.required}),
@@ -107,9 +111,9 @@ export class YoutubePostComponent implements OnInit {
     getUploadedFile(file: File) {
       this.uploadedFile = file;
       console.log(this.uploadedFile, 'Uploaded File');
-      this.videoDetails.get('title')?.setValue(file.name);
-      this.videoDetails.get('videoKind')?.setValue(this.videoKindControl.value);
-      console.log(this.videoDetails.value);
+      this.postDetails.get('title')?.setValue(file.name);
+      this.postDetails.get('videoKind')?.setValue(this.videoKindControl.value);
+      console.log(this.postDetails.value);
       this.activeModal.update({ size: 'xl' });
     }
 
@@ -143,7 +147,18 @@ export class YoutubePostComponent implements OnInit {
         return `${value}`;
       }
 
-      onSubmit(){}
+      onSubmit(){
+        // const post: Post = {
+        //   organizationId: this.store.orgId(),
+        //   publishDate: this.store.calenderArgs(),
+        //   integrationId: this.store.selectedProvider()?.id || '',
+        //   approval: 'YES',
+        //   title: this.postDetails.get('title')?.value || '',
+        //   description: this.postDetails.get('description')?.value || '',
+        //   videoKind: this.postDetails.get('videoKind')?.value || '',
+        //   forKids: this.postDetails.get('forKids')?.value || false,
+        // }
+      }
 
       onClose() {
         // this.modalService.modalInstances

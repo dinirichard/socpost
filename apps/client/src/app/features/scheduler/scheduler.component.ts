@@ -15,6 +15,9 @@ import { MatInputModule } from '@angular/material/input';
 import { YoutubePostComponent } from './posts/youtube.post.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SelectSocialDialogComponent } from '../../components/select-social/select-social.component';
+import { SelectConnectionDialogComponent } from '../../components/select-connection/select-connection-dialog.component';
+import { ProvidersStore } from '../../core/signal-states/providers.state';
+import { Provider } from '../../models/provider.dto';
 
 
 
@@ -34,7 +37,7 @@ export interface DialogCalPostData {
     FormsModule, 
     MatDialogModule
   ],
-  providers: [SchedulerService ],
+  providers: [SchedulerService, ProvidersStore ],
   templateUrl: './scheduler.component.html',
   styleUrl: './scheduler.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,6 +45,7 @@ export interface DialogCalPostData {
 export class SchedulerComponent 
   implements AfterViewInit 
   {
+    readonly providerStore = inject(ProvidersStore);
   collasped = signal(false);
   computedCollasped = computed(() => this.collasped() ? '70px' : '250px');
   sideNavWidthOutput = output<string>();
@@ -77,7 +81,8 @@ export class SchedulerComponent
     onTimeRangeSelected: async (args) => {
       // const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
       // const selectedSocial = await this.openSocialDialog(args);
-      await this.openYoutubeDialog(args);
+      this.openSocialDialog(args);
+      // await this.openYoutubeDialog(args);
       const calendar = args.control;
 
       // if(this.social()) {
@@ -234,10 +239,11 @@ export class SchedulerComponent
 
 
   readonly dialog = inject(MatDialog);
-  social = signal('');
+  social = signal<Provider | undefined>(undefined);
 
   async openSocialDialog(args: any) {
-    const dialogRef = this.dialog.open(SelectSocialDialogComponent, {
+    this.providerStore.addCalendarArgs(args);
+    const dialogRef = this.dialog.open(SelectConnectionDialogComponent, {
       data: {
         social: this.social(),
         title: 'Select'
@@ -256,12 +262,12 @@ export class SchedulerComponent
 
   openYoutubeDialog(args: any) {
 
+
     const modalRef = this.modalService.open(YoutubePostComponent, { 
       centered: false,
       size: 'l',
 
     });
-    modalRef.componentInstance.calenderArgs = args;
     modalRef.closed.subscribe( val => {
       console.log(val)
     });

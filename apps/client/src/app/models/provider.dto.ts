@@ -1,4 +1,4 @@
-export interface ProviderItem {
+export interface Provider {
     id: string;
     name: string;
     picture: string;

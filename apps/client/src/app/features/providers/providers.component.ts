@@ -7,9 +7,11 @@ import { MatListModule } from "@angular/material/list";
 import {MatDividerModule} from '@angular/material/divider';
 import {MatButtonModule} from '@angular/material/button';
 import { ProvidersService } from "../../services/providers.service";
-import { ProviderItem } from "../../models/provider.dto";
+import { Provider } from "../../models/provider.dto";
 import { MatDialog } from "@angular/material/dialog";
 import { SelectSocialDialogComponent } from "../../components/select-social/select-social.component";
+import { Dialog } from "@angular/cdk/dialog";
+import { ProvidersStore } from "../../core/signal-states/providers.state";
 
 @Component({
     selector: "app-providers",
@@ -25,25 +27,27 @@ import { SelectSocialDialogComponent } from "../../components/select-social/sele
     ],
     templateUrl: "./providers.component.html",
     styleUrl: "./providers.component.scss",
+    providers: [ProvidersStore],
 })
-export class ProvidersComponent implements OnInit {
+export class ProvidersComponent {
     providerService = inject(ProvidersService);
+    readonly providerStore = inject(ProvidersStore);
     readonly dialog = inject(MatDialog);
+    orgId: string | null = null;
 
     sideNavWidth = '250px';
     sideNavCollapsed = computed(() => {
         return (this.sideNavWidth === '70px')
     });
     providerImgSize = computed(() => this.sideNavCollapsed() ? '32px' : '50px')
-    providers: ProviderItem[] = [];
+    providers: Provider[] = [];
 
     selectedProvider = signal('');
 
-    ngOnInit(): void {
-        this.providerService.getAllProviders().subscribe( res => {
-            this.providers = res;
-            console.log(res, 'Providers List');
-        });
+
+    constructor() {
+    //   this.providerStore.loadProviders();
+        
     }
 
     sdss = effect( () => {
@@ -61,21 +65,19 @@ export class ProvidersComponent implements OnInit {
               social: this.selectedProvider(),
               title: 'Add'
             },
-          });
+        });
       
-          await dialogRef.afterClosed().subscribe(result => {
+        await dialogRef.afterClosed().subscribe(result => {
             if (result) {
               console.log(`Dialog result: ${result.social}`);
               this.selectedProvider.set(result.social);
               this.connectToSocial(this.selectedProvider());
             }
-          });
+        });
     }
 
     connectToSocial(provider: string) {
-        this.providerService.connectToSocial(provider).subscribe( result => {
-          this.providers.push(result);
-        });
+        this.providerService.getIntegrationUrl(provider);
     }
 
 }
