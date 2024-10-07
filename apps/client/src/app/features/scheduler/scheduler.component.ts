@@ -2,6 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {DayPilot, DayPilotModule, DayPilotCalendarComponent, DayPilotMonthComponent } from "daypilot-pro-angular";
+import MonthTimeRangeSelectedArgs = DayPilot.MonthTimeRangeSelectedArgs;
 import { SchedulerService} from "../../services/scheduler.service";
 import {
   MAT_DIALOG_DATA,
@@ -14,7 +15,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { YoutubePostComponent } from './posts/youtube.post.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SelectSocialDialogComponent } from '../../components/select-social/select-social.component';
 import { SelectConnectionDialogComponent } from '../../components/select-connection/select-connection-dialog.component';
 import { ProvidersStore } from '../../core/signal-states/providers.state';
 import { Provider } from '../../models/provider.dto';
@@ -78,7 +78,7 @@ export class SchedulerComponent
     showWeekend: true,
     timeRangeSelectedHandling: "Enabled",
     theme: 'calendar_green',
-    onTimeRangeSelected: async (args) => {
+    onTimeRangeSelected: async (args: MonthTimeRangeSelectedArgs) => {
       // const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
       // const selectedSocial = await this.openSocialDialog(args);
       this.openSocialDialog(args);
@@ -241,7 +241,7 @@ export class SchedulerComponent
   readonly dialog = inject(MatDialog);
   social = signal<Provider | undefined>(undefined);
 
-  async openSocialDialog(args: any) {
+  async openSocialDialog(args: MonthTimeRangeSelectedArgs) {
     this.providerStore.addCalendarArgs(args);
     const dialogRef = this.dialog.open(SelectConnectionDialogComponent, {
       data: {
@@ -253,7 +253,9 @@ export class SchedulerComponent
     await dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.social.set(result.social);
-        console.log(`Dialog result: ${result.social}`);
+        console.log(`Dialog result: ${result.selectedProvider}`);
+        this.providerStore.addCalendarArgs(args);
+        this.providerStore.selectProvider(result.selectedProvider);
 
         this.openYoutubeDialog(args);
       }

@@ -1,5 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, model, OnInit } from "@angular/core";
-import { MatButtonModule } from "@angular/material/button";
+import { Component, ChangeDetectionStrategy, inject, OnInit } from "@angular/core";
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Provider } from "../../models/provider.dto";
 import { ProvidersStore } from "../../core/signal-states/providers.state";
@@ -18,18 +17,19 @@ export interface DialogConnectionData {
     styleUrl: './select-connection-dialog.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SelectConnectionDialogComponent {
+export class SelectConnectionDialogComponent implements OnInit {
     readonly dialogRef = inject(MatDialogRef<SelectConnectionDialogComponent>);
     readonly data = inject<DialogConnectionData>(MAT_DIALOG_DATA);
-    readonly providerStore = inject(ProvidersStore);
-    providers: Provider[] = [];
+    readonly store = inject(ProvidersStore);
 
-    // ngOnInit(): void {
-    // }
+    ngOnInit(): void {
+        this.store.readFromStorage();
+    }
 
     onSelectSocial(provider: Provider): void {
         this.data.selectedProvider = provider;
-        this.providerStore.selectProvider(provider);
+        this.store.selectProvider(provider);
+        // this.store.writeToStorage();
         this.dialogRef.close(this.data);
     }
 }

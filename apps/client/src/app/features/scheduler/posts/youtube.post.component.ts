@@ -84,7 +84,8 @@ export class YoutubePostComponent implements OnInit {
 
     ngOnInit() {
         // this.dialogRef.updateSize('1000px', '90%');
-        console.log();
+        console.log('Store', this.store.providers());
+        console.log('Store', this.store.selectedProvider());
     }
 
     videodd = explicitEffect([this.videoSlider], ([videoSlider], cleanup) => {

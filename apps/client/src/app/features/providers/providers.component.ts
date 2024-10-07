@@ -46,14 +46,14 @@ export class ProvidersComponent {
 
 
     constructor() {
-    //   this.providerStore.loadProviders();
-        
+        this.providerStore.loadProviders();
+        // this.providerStore.writeToStorage();
     }
 
-    sdss = effect( () => {
-        console.log(this.sideNavWidth);
-        console.log(this.sideNavCollapsed());
-    });
+    // sdss = effect( () => {
+    //     console.log(this.sideNavWidth);
+    //     console.log(this.sideNavCollapsed());
+    // });
 
     changeSideNav(val: string) {
         this.sideNavWidth = val;
@@ -69,7 +69,6 @@ export class ProvidersComponent {
       
         await dialogRef.afterClosed().subscribe(result => {
             if (result) {
-              console.log(`Dialog result: ${result.social}`);
               this.selectedProvider.set(result.social);
               this.connectToSocial(this.selectedProvider());
             }

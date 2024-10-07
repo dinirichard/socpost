@@ -5,10 +5,16 @@
         <div class="dialog-title columns is-mobile">
             <div class="column is-1">
                 <figure class="image is-48x48">
-                    <img class="is-rounded" src="https://bulma.io/assets/images/placeholders/48x48.png" />
+                    <img class="is-rounded profile-img" [src]="store.selectedProvider()?.picture || ''" />
+                    <img class="provider-img" [src]="store.selectedProvider()?.providerIdentifier + '.png' || 'youtube' + '.png'" />
                 </figure>
             </div>
             <h6 class="column video-title">{{this.postDetails.get('title')?.value}}</h6>
+            <mat-form-field class="post-time" >
+                <mat-label>Post Time</mat-label>
+                <input matInput type="time">
+            </mat-form-field>
+
             <div class="column is-2">
                 <div class="flex justify-center items-center pr-4">
                     <mat-button-toggle-group

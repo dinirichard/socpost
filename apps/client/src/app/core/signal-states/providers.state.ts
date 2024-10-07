@@ -5,6 +5,9 @@ import { debounceTime, distinctUntilChanged, exhaustMap, pipe, tap } from 'rxjs'
 import { tapResponse } from '@ngrx/operators';
 import { Provider } from "../../models/provider.dto";
 import { ProvidersService } from '../../services/providers.service';
+import { withDevtools, withStorageSync } from '@angular-architects/ngrx-toolkit';
+import {DayPilot} from "daypilot-pro-angular";
+import MonthTimeRangeSelectedArgs = DayPilot.MonthTimeRangeSelectedArgs;
 
 
 type ProvidersState = { 
@@ -28,6 +31,15 @@ const initialState: ProvidersState = {
 export const ProvidersStore = signalStore(
     { providedIn: 'root' },
     withState(initialState),
+    withStorageSync({
+        key: 'syncedStore', // key used when writing to/reading from storage
+        autoSync: true, // read from storage on init and write on state changes - `true` by default
+        // select: (state: ProvidersState) => Partial<ProvidersState>, // projection to keep specific slices in sync
+        // parse: (stateString: string) => State, // custom parsing from storage - `JSON.parse` by default
+        // stringify: (state: ProvidersState) => string, // custom stringification - `JSON.stringify` by default
+        storage: () => sessionStorage, // factory to select storage to sync with
+    }),
+    withDevtools('providerStore'),
     withMethods((store, providersService = inject(ProvidersService)) => ({
         loadProviders: rxMethod<void>(
             pipe(
@@ -69,8 +81,8 @@ export const ProvidersStore = signalStore(
         clearSelectedProvider(): void {
             patchState(store, { selectedProvider: undefined });
         },
-        addCalendarArgs(calendarArgs: any): void {
-            patchState(store, { calenderArgs: calendarArgs });
+        addCalendarArgs(args: MonthTimeRangeSelectedArgs): void {
+            patchState(store, { calenderArgs: String(args) });
         },
         clearCalendarArgs(): void {
             patchState(store, { calenderArgs: undefined });
@@ -78,9 +90,12 @@ export const ProvidersStore = signalStore(
     })),
     withComputed((store) => ({})),
     withHooks({
-        onInit({ loadProviders }) {
-            loadProviders();
-        },
+        // onInit({ loadProviders }) {
+        //     loadProviders();
+        // },
+        onDestroy(store) {
+            console.log('Destroy State', store.isLoading);
+        }
     }),
 );
     
