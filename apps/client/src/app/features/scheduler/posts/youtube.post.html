@@ -86,6 +86,12 @@
             <div class="upload-media column">
                 <div>
                     @if (aspectRatio()  === '16:9') {
+                        <app-image-upload 
+                            [aspectRatio]="aspectRatio()" 
+                            [multiple]="multipleImages()"
+                            (uploadFile)="getUploadedFile($event)" 
+                        >
+                        </app-image-upload>
                         <figure class="image is-16by9 normal-video">
                             <!-- <video
                             #video
@@ -103,6 +109,12 @@
                         <input matSliderThumb [(ngModel)]="videoSlider()">
                     </mat-slider> -->
                     } @else {
+                        <app-image-upload 
+                            [aspectRatio]="aspectRatio()" 
+                            [multiple]="multipleImages()"
+                            (uploadFile)="getUploadedFile($event)" 
+                        >
+                        </app-image-upload>
                         <figure class="image is-9by16 shorts-video">
                           <img src="https://bulma.io/assets/images/placeholders/360x640.png" />
                             <!-- <video

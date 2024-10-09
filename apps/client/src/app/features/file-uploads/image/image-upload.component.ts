@@ -1,25 +1,24 @@
-import { Component, effect, inject, input, OnDestroy, output, signal, TemplateRef } from "@angular/core";
+import { Component, effect, input, output, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
-import { DragDropDirectiveModule } from "../drag-drop.directive";
 import { MatProgressBarModule, ProgressBarMode } from "@angular/material/progress-bar";
-import { FileUploadService } from "../file-upload.service";
+import { DragDropDirectiveModule } from "../drag-drop.directive";
 import { Observable } from "rxjs";
-import { UploadService } from "../../../services/upload.service";
-import { toast as superToast, toast } from 'bulma-toast';
+
+type FilePrev = { file: File; preview: string; };
 
 @Component({
-    selector: "app-file-upload",
+    selector: "app-image-upload",
     standalone: true,
     imports: [
         CommonModule, MatIconModule, 
         DragDropDirectiveModule, MatProgressBarModule
     ],
-    providers: [FileUploadService],
-    templateUrl: "./file-upload.component.html",
-    styleUrl: "./file-upload.component.scss",
+    templateUrl: "./image-upload.component.html",
+    styleUrl: "./image-upload.component.scss",
 })
-export class FileUploadComponent {
+export class ImageUploadComponent {
+    multiple = input(false);
 
     uploadFile = output<File>();
     uploadError = output<string>();
@@ -35,19 +34,37 @@ export class FileUploadComponent {
     progressMode: ProgressBarMode = 'query';
     message = '';
     fileInfos?: Observable<any>;
+    files: FilePrev[] = [];
+    imagePreview = signal('');
 
-    constructor(
-        private upService: UploadService
-    ) { }
-
-    files: any[] = [];
+    uploadSuccess = false;
+    uploadErrors = false;
 
     /**
      * on file drop handler
      */
     onFileDropped($event: FileList) {
-        console.log($event.item);
-        // this.prepareFilesList($event);
+        const fileArray = Array.from($event);
+        for (const item of fileArray) {
+            if (item.type.startsWith('image/')) {
+                this.prepareFilesList(item);
+                // this.getImageDimensions(item).then(dimensions => {
+                //     console.log('Width:', dimensions.width);
+                //     console.log('Height:', dimensions.height);
+                //     const aspectRatio = this.getAspectRatio(dimensions.width, dimensions.height);
+                //     console.log('aspectRatio:', aspectRatio);
+                //     if (aspectRatio === this.aspectRatio()) {
+                //         this.prepareFilesList(item);
+                //     } else {
+                //         console.log('aspectRatio:', aspectRatio);
+                //         // this.toaster(`The video must have ${this.aspectRatio()} aspect ratio.`, 'is-danger');
+                //     }
+                // });
+            } else {
+                console.log('YouTube accepts only mp4 video formats', item.type);
+                // this.toaster('YouTube accepts only mp4 video formats', 'is-danger');
+            }
+        }
     }
 
     /**
@@ -58,22 +75,25 @@ export class FileUploadComponent {
         if (input.files) {
             const fileArray = Array.from(input.files);
             for (const item of fileArray) {
-                if (item.type === 'video/mp4') {
-                    this.getVideoDimensions(item).then(dimensions => {
-                        console.log('Width:', dimensions.width);
-                        console.log('Height:', dimensions.height);
-                        const aspectRatio = this.getAspectRatio(dimensions.width, dimensions.height);
-                        console.log('aspectRatio:', aspectRatio);
-                        if (aspectRatio === this.aspectRatio()) {
-                            this.prepareFilesList(item);
-                        } else {
-                            console.log('aspectRatio:', aspectRatio);
-                            this.toaster(`The video must have ${this.aspectRatio()} aspect ratio.`, 'is-danger');
-                        }
-                    });
+                if (item.type.startsWith('image/')) {
+                    this.prepareFilesList(item);
+                    return;
+                    // this.getImageDimensions(item).then(dimensions => {
+                    //     console.log('Width:', dimensions.width);
+                    //     console.log('Height:', dimensions.height);
+                    //     const aspectRatio = this.getAspectRatio(dimensions.width, dimensions.height);
+                    //     console.log('aspectRatio:', aspectRatio);
+                    //     if (aspectRatio === this.aspectRatio()) {
+                    //         this.prepareFilesList(item);
+                    //     } else {
+                    //         console.log('aspectRatio:', aspectRatio);
+                    //         // this.toaster(`The video must have ${this.aspectRatio()} aspect ratio.`, 'is-danger');
+                    //     }
+                    // });
                 } else {
                     console.log('YouTube accepts only mp4 video formats', item.type);
-                    this.toaster('YouTube accepts only mp4 video formats', 'is-danger');
+                    return;
+                    // this.toaster('YouTube accepts only mp4 video formats', 'is-danger');
                 }
             }
             // this.prepareFilesList(input.files);
@@ -82,23 +102,24 @@ export class FileUploadComponent {
     }
 
     /**
-     * Delete file from files list
-     * @param index (File index)
-     */
-    deleteFile(index: number) {
-        this.files.splice(index, 1);
-    }
-
-    /**
      * Convert Files list to normal array list
      * @param files (Files List)
      */
     prepareFilesList(item: File) {
-        this.files.push(item);
+        
         this.currentFile = item;
-        console.log(this.currentFile, 'This is the file');
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.imagePreview.set(e.target?.result as string); // Set image preview URL
+            this.files.push({file: item, preview: e.target?.result as string});
+            console.log('Files push', this.files);
+        };
+        reader.readAsDataURL(item);
+        console.log('Reader', reader.result);
+
         if ((item.size / (1 * 1024 * 1024)) < 10 ) {
-            this.uploadFile.emit(this.currentFile);
+            // this.uploadFile.emit(this.currentFile);
             // this.upService.simpleImageUpload(item)
             // .then(
             //     (event: any) => {
@@ -121,7 +142,7 @@ export class FileUploadComponent {
             //     }
             // );
         } else {
-            this.uploadFile.emit(this.currentFile);
+            // this.uploadFile.emit(this.currentFile);
             // this.upService.largeMediaUpload(item)
             // .then(
             //     (event: any) => {
@@ -146,6 +167,13 @@ export class FileUploadComponent {
     //   this.uploadFilesSimulator(0);
     }
 
+    deleteFile(item: FilePrev) {
+        console.log('File List', this.files);
+        this.files = this.files.filter((file) => file.file.name !== item.file.name); 
+        this.imagePreview.set('');
+        console.log('File List', this.files);
+    }
+
     /**
         * format bytes
         * @param bytes (File size in bytes)
@@ -160,26 +188,6 @@ export class FileUploadComponent {
         const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-    }
-
-    getVideoDimensions(videoFile: File): Promise<{ width: number, height: number }> {
-        return new Promise((resolve, reject) => {
-            const video = document.createElement('video');
-            video.preload = 'metadata'; // Load only metadata
-      
-            video.onloadedmetadata = () => {
-              resolve({
-                width: video.videoWidth,
-                height: video.videoHeight
-              });
-            };
-      
-            video.onerror = () => {
-              reject(null); // Or reject with an error object
-            };
-      
-            video.src = URL.createObjectURL(videoFile); 
-          });
     }
 
     getImageDimensions(file: File): Promise<{ width: number, height: number }> {
@@ -208,17 +216,5 @@ export class FileUploadComponent {
         const aspectHeight = height / divisor;
     
         return `${aspectWidth}:${aspectHeight}`;
-    }
-
-    toaster(message: string, type: any) {
-        toast({
-            message: message,
-            type: type,
-            dismissible: true,
-            animate: { in: 'fadeIn', out: 'fadeOut' },
-            position: 'top-right',
-            duration: 15,
-            pauseOnHover: true,
-          });
     }
 }

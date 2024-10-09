@@ -14,7 +14,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import { explicitEffect } from "ngxtension/explicit-effect";
-import { FileUploadComponent } from "../../file-uploads/single/file-upload.component";
+import { FileUploadComponent } from "../../file-uploads/video/file-upload.component";
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbTimepickerModule, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
 import { Post } from "../../../models/post.dto";
@@ -23,6 +23,7 @@ import {DayPilot} from "daypilot-pro-angular";
 import MonthTimeRangeSelectedArgs = DayPilot.MonthTimeRangeSelectedArgs;
 import { Tag } from "@prisma/client";
 import { TagsInputComponent } from "../../../components/tags-input/tags-input.component";
+import { ImageUploadComponent } from "../../file-uploads/image/image-upload.component";
 // import { ToastTemplatesComponent } from "../../../shared/toast/toast-templates.component";
 
 
@@ -32,6 +33,7 @@ import { TagsInputComponent } from "../../../components/tags-input/tags-input.co
         CommonModule, MatDialogModule,
         FormsModule, MatFormFieldModule,
         ReactiveFormsModule, FileUploadComponent,
+        ImageUploadComponent,
         MatInputModule, MatSidenavModule, 
         MatIconModule, MatButtonModule,
         MatProgressBarModule, MatSliderModule,
@@ -55,6 +57,7 @@ export class YoutubePostComponent implements OnInit {
     videoMedia = viewChild<ElementRef<HTMLVideoElement>>('video');
     videoSlider = signal(0);
     videoElement: HTMLVideoElement | undefined;
+    multipleImages = signal(false);
     
 
     // constructor( ) {

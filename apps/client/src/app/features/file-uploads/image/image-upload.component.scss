@@ -1,0 +1,138 @@
+.file-upload-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: 2px dashed #ccc;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .file-upload-wrapper.success {
+    border-color: green;
+  }
+  
+  .file-upload-wrapper.error {
+    border-color: red;
+  }
+  
+  .file-dropper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .image-name {
+    font-weight: bold;
+  }
+  
+.image-preview {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 0.5rem;
+    border-radius: 10px;
+}
+
+.image-preview-details {
+    margin-top: 0.1rem;
+    p {
+        margin-bottom: 0px;
+        padding: 0px !important;
+    }
+    .delete-icon {
+        cursor: pointer;
+        color: red;
+        padding: 0px !important;
+    }
+}
+
+
+.container {
+    // width: 450px;
+    // height: 200px;
+    padding: 1rem;
+    text-align: center;
+    border: 2px dashed #ccc;
+    position: relative;
+    margin: 0 auto;
+    // background-color: green;
+
+    .container.success {
+        border-color: green;
+    }
+      
+    .container.error {
+        border-color: red;
+    }
+
+    div {
+        input {
+            opacity: 0;
+            position: absolute;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        label {
+            color: white;
+            width: 183px;
+            height: 44px;
+            border-radius: 21.5px;
+            background-color: #db202f;
+            padding: 8px 16px;
+        }
+        
+        h3 {
+            height: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #38424c;
+        }
+    }
+ 
+}
+
+.dropzone {
+    width: 450px;
+    height: 200px;
+    padding: 2rem;
+    text-align: center;
+    border: dashed Ipx #979797;
+    position: relative;
+    margin: O auto;
+
+    input {
+        opacity: O;
+        position: absolute;
+        z-index: 2 ;
+        width: 100%;
+        height: 100%;
+        top: O;
+        left: O;
+    }
+
+    label {
+        color: white;
+        width: 183px;
+        height: 44px;
+        border-radius: 21.5px;
+        background-color: #db202f;
+        padding: 8PX 16px;
+    }
+
+    h3 {
+        font-size: 20px;
+        font-weight: 600;
+        color: #38424c;
+    }
+}
+
+.fileover {
+    animation: shake 1s;
+    animation-iteration-count: infinite;
+}

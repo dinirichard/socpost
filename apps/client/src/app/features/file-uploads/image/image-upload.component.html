@@ -1,0 +1,50 @@
+
+<div 
+    appDragDrop
+    class="container"
+    [class.success]="uploadSuccess"
+    [class.error]="uploadErrors"
+    [style.height]="aspectRatio() === '16:9' ? '193px' : '300px'"
+    [style.width]="aspectRatio() === '16:9' ? '300px' : '233px'"
+    (fileDropped)="onFileDropped($event)"
+    [hidden]="!multiple() && files.length >= 1"
+>
+    <div >
+        <input type="file" #fileDropRef 
+        id="fileDropRef" [multiple]="multiple()" 
+        accept="image/*"
+        (change)="fileBrowseHandler($event)" 
+        />
+        <mat-icon>upload</mat-icon>
+        <h3>Drag and drop file here</h3>
+        <h3>or</h3>
+        <label for="fileDropRef">Browse for file</label>
+    </div>
+</div>
+
+@for(item of files; track item) {
+    <div class="container"
+        [class.success]="uploadSuccess"
+        [class.error]="uploadErrors"
+        [style.height]="aspectRatio() === '16:9' ? '193px' : '300px'"
+        [style.width]="aspectRatio() === '16:9' ? '300px' : '233px'"
+    >
+        <div class="file-dropper">
+            <div *ngIf="item.file?.name">
+                <div *ngIf="selectedFile || item.preview">
+                    <div class="columns image-preview-details">
+                        <p class="column">
+                            {{ formatBytes(item.file?.size, 2) }}
+                       </p>
+                       <mat-icon class="column delete-icon" (click)="deleteFile(item)">delete</mat-icon>
+                    </div>
+                    <img
+                        [src]="item.preview"
+                        alt="Image Preview"
+                        class="image-preview"
+                    />
+              </div>
+            </div>
+        </div>
+    </div>
+}
