@@ -16,8 +16,13 @@ import {MatRadioModule} from '@angular/material/radio';
 import { explicitEffect } from "ngxtension/explicit-effect";
 import { FileUploadComponent } from "../../file-uploads/single/file-upload.component";
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbTimepickerModule, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
 import { Post } from "../../../models/post.dto";
 import { ProvidersStore } from "../../../core/signal-states/providers.state";
+import {DayPilot} from "daypilot-pro-angular";
+import MonthTimeRangeSelectedArgs = DayPilot.MonthTimeRangeSelectedArgs;
+import { Tag } from "@prisma/client";
+import { TagsInputComponent } from "../../../components/tags-input/tags-input.component";
 // import { ToastTemplatesComponent } from "../../../shared/toast/toast-templates.component";
 
 
@@ -31,7 +36,8 @@ import { ProvidersStore } from "../../../core/signal-states/providers.state";
         MatIconModule, MatButtonModule,
         MatProgressBarModule, MatSliderModule,
         MatButtonToggleModule, MatCheckboxModule,
-        MatRadioModule, MatSliderModule
+        MatRadioModule, MatSliderModule,
+        NgbTimepickerModule, TagsInputComponent
     ],
     providers: [ ProvidersStore ],
     templateUrl: "./youtube.post.html",
@@ -41,10 +47,11 @@ import { ProvidersStore } from "../../../core/signal-states/providers.state";
 export class YoutubePostComponent implements OnInit {
     activeModal = inject(NgbActiveModal);
     readonly store = inject(ProvidersStore);
-    @Input() calenderArgs!: any;
 
-    // videoMedia = document.querySelector("video");
-    // @ViewChild('video')  videoMedia!: <ElementRef<HTMLVideoElement>>;
+    time = { hour: 13, minute: 30 };
+    timeSpinners = false;
+    calenderArgs = new Date(this.store.calenderArgs()!);
+
     videoMedia = viewChild<ElementRef<HTMLVideoElement>>('video');
     videoSlider = signal(0);
     videoElement: HTMLVideoElement | undefined;
@@ -64,6 +71,11 @@ export class YoutubePostComponent implements OnInit {
     computedCollasped = computed(() => this.collasped() ? '70px' : '250px');
     sideNavWidthOutput = output<string>();
 
+    timeControl = new FormControl<NgbTimeStruct | null>(null, {validators: Validators.required});
+    tagsAvailable: Tag[] = [
+      {id: 'dfdfdf', name: 'video'},
+      {id: 'hjklhuu', name: 'short'},
+    ];
     formPageControl = new FormControl('details');
     videoKindControl = new FormControl('video');
     postDetails = new FormGroup({
@@ -73,8 +85,8 @@ export class YoutubePostComponent implements OnInit {
         videoMediaId: new FormControl('', {validators: Validators.required}),
         thumbnailMediaId: new FormControl('', {validators: Validators.required}),
         forKids: new FormControl(false, {validators: Validators.required}),
-        tags: new FormControl('video', {validators: Validators.required}),
-    })
+        tags: new FormControl([{ id: 'unknown', name: 'unknown'}], {validators: Validators.required}),
+    });
     
     sds = effect( () => {
       console.log(this.computedCollasped());
@@ -84,29 +96,43 @@ export class YoutubePostComponent implements OnInit {
 
     ngOnInit() {
         // this.dialogRef.updateSize('1000px', '90%');
-        console.log('Store', this.store.providers());
-        console.log('Store', this.store.selectedProvider());
+        console.log('Store', this.store.calenderArgs());
+
+
+        //* Implement to complete Tags Input
+        //* const { tags } = this.dataService.fetchInfo();
+        const tags = [
+            {id: 'dfdfdf', name: 'video'},
+            {id: 'hjklhuu', name: 'short'},
+        ];
+
+        // this.tagsAvailable = tags.map(({ id, name }) => {
+        //   return {
+        //     id,
+        //     name
+        //   };
+        // });
     }
 
     videodd = explicitEffect([this.videoSlider], ([videoSlider], cleanup) => {
-      console.log('videoSlider updated', this.videoSlider());
-  
-      this.videoElement = this.videoMedia()?.nativeElement;
-        console.log(this.videoElement);
-        if ( this.videoElement) {
-          console.log(this.videoElement.currentTime);
-          console.log(this.videoElement.currentTime);
-          console.log(this.videoElement.duration);
-          console.log(this.videoElement.readyState);
-          // if (!this.videoMedia.readyState) return;
-          // this.videoMedia()?.nativeElement.controls = true;
-          this.videoElement.currentTime = this.videoElement.duration * this.videoSlider();
-          // this.videoSlider > 1 ? this.videoElement.play() : console.log('dsd');
-        }
+        console.log('videoSlider updated', this.videoSlider());
+      
+        this.videoElement = this.videoMedia()?.nativeElement;
+            console.log(this.videoElement);
+            if ( this.videoElement) {
+                console.log(this.videoElement.currentTime);
+                console.log(this.videoElement.currentTime);
+                console.log(this.videoElement.duration);
+                console.log(this.videoElement.readyState);
+                // if (!this.videoMedia.readyState) return;
+                // this.videoMedia()?.nativeElement.controls = true;
+                this.videoElement.currentTime = this.videoElement.duration * this.videoSlider();
+                // this.videoSlider > 1 ? this.videoElement.play() : console.log('dsd');
+            }
 
-      cleanup(() => {
-        console.log('cleanup');
-      });
+        cleanup(() => {
+            console.log('cleanup');
+        });
     });
 
     getUploadedFile(file: File) {
@@ -148,6 +174,11 @@ export class YoutubePostComponent implements OnInit {
         return `${value}`;
       }
 
+      public onAddTag(event: Tag[]) {
+        console.log(event);
+        this.postDetails.get('tags')?.setValue(event);
+      }
+
       onSubmit(){
         // const post: Post = {
         //   organizationId: this.store.orgId(),
@@ -158,6 +189,7 @@ export class YoutubePostComponent implements OnInit {
         //   description: this.postDetails.get('description')?.value || '',
         //   videoKind: this.postDetails.get('videoKind')?.value || '',
         //   forKids: this.postDetails.get('forKids')?.value || false,
+        //   tags: this.postDetails.get('tags')?.value || [],
         // }
       }
 

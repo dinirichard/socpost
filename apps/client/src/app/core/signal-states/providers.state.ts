@@ -15,7 +15,7 @@ type ProvidersState = {
     orgId: string;
     isLoading: boolean;
     selectedProvider: Provider | undefined;
-    calenderArgs: any;
+    calenderArgs: Date | undefined;
 };
 
 const initialState: ProvidersState = {
@@ -81,8 +81,9 @@ export const ProvidersStore = signalStore(
         clearSelectedProvider(): void {
             patchState(store, { selectedProvider: undefined });
         },
-        addCalendarArgs(args: MonthTimeRangeSelectedArgs): void {
-            patchState(store, { calenderArgs: String(args) });
+        addCalendarArgs(start: Date): void {
+            console.log('Start', start);
+            patchState(store, { calenderArgs: start });
         },
         clearCalendarArgs(): void {
             patchState(store, { calenderArgs: undefined });

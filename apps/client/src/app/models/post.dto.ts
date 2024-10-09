@@ -16,7 +16,7 @@ export interface Post {
     publishDate    : any;    
     organizationId : string;
     integrationId  : string;
-    tags           : Tag[];
+    tags?           : Tag[];
   }
 
 export class PostDTO {
@@ -24,5 +24,6 @@ export class PostDTO {
 }
 
   export interface Tag {
+    id?: string;
     name: string;
   }

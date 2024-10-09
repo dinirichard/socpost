@@ -79,42 +79,47 @@
     transition: margin-left 0.5s;
     padding: 16px;
     margin-left: 500px;
-  }
+}
+
+.open-btn {
+  cursor: pointer;
+}
+
+/* Shift the main content to the right when sidenav is opened */
+.sidenav.active {
+  width: 20px;
+}
+
+.main-content.active {
+  margin-left: 0px;
+}
+.video-title {
+  margin-bottom: 0px;
+}
+.shorts-video {
+  height: 380px;
+}
+.normal-video {
   
-  .open-btn {
-    cursor: pointer;
-  }
-  
-  /* Shift the main content to the right when sidenav is opened */
-  .sidenav.active {
-    width: 20px;
-  }
-  
-  .main-content.active {
-    margin-left: 0px;
-  }
-
-  .video-title {
-    margin-bottom: 0px;
-  }
-
-  .shorts-video {
-    height: 380px;
-  }
-
-  .normal-video {
-    
-  }
-
-  .profile-img {
-    position: absolute;
-  }
-
-  .provider-img {
-    width: 28px;
-    height: 28px;
-    position: absolute;
-    margin-left: 20px;
-    margin-top: 20px;
-  }
+}
+.profile-img {
+  position: absolute;
+}
+.provider-img {
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+.dark-modal .modal-content {
+  background-color: #292b2c;
+  color: white;
+}
+.dark-modal .close {
+  color: white;
+}
+.light-blue-backdrop {
+  background-color: #5cb3fd;
+}
   

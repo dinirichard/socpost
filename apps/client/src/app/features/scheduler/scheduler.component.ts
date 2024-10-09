@@ -82,6 +82,7 @@ export class SchedulerComponent
       // const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
       // const selectedSocial = await this.openSocialDialog(args);
       this.openSocialDialog(args);
+      this.providerStore.addCalendarArgs(args.start.toDate());
       // await this.openYoutubeDialog(args);
       const calendar = args.control;
 
@@ -242,7 +243,7 @@ export class SchedulerComponent
   social = signal<Provider | undefined>(undefined);
 
   async openSocialDialog(args: MonthTimeRangeSelectedArgs) {
-    this.providerStore.addCalendarArgs(args);
+    console.log('calendarArgs', `${args.start.getDay()} / ${args.start.getMonth()} / ${args.start.getYear()}`);
     const dialogRef = this.dialog.open(SelectConnectionDialogComponent, {
       data: {
         social: this.social(),
@@ -254,7 +255,7 @@ export class SchedulerComponent
       if (result) {
         this.social.set(result.social);
         console.log(`Dialog result: ${result.selectedProvider}`);
-        this.providerStore.addCalendarArgs(args);
+        this.providerStore.addCalendarArgs(args.start.toDate());
         this.providerStore.selectProvider(result.selectedProvider);
 
         this.openYoutubeDialog(args);
@@ -268,6 +269,7 @@ export class SchedulerComponent
     const modalRef = this.modalService.open(YoutubePostComponent, { 
       centered: false,
       size: 'l',
+      modalDialogClass: 'dark-modal',
 
     });
     modalRef.closed.subscribe( val => {

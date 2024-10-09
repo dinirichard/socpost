@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import '../../../node_modules/@angular/material/prebuilt-themes/cyan-orange.css'; 
+@import "../../../node_modules/@angular/cdk/overlay-prebuilt.css";
+
 @import './app/shared/themes/calendar_green.scss';
 @import "../../../node_modules/bulma/bulma.scss";
 @import "../../../node_modules/bulma/css/bulma.css";
