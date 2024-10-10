@@ -1,10 +1,148 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@import '../../../node_modules/@angular/material/prebuilt-themes/cyan-orange.css'; 
+@use "../../../node_modules/@angular/material" as mat;
+@include mat.core();
+
+// @tailwind base;
+// @tailwind components;
+// @tailwind utilities; 
 @import "../../../node_modules/@angular/cdk/overlay-prebuilt.css";
 
-@import './app/shared/themes/calendar_green.scss';
+
+
+
+html, body { height: 100%; }
+// body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+//* THEME-BUILDER link: http://material-foundation.github.io?primary=%23034F7C&bodyFont=Lato&displayFont=Playfair+Display&colorMatch=true
+$custom-theme: mat.define-theme(
+    (
+        color: (
+            use-system-variables: true,
+            // system-variables-prefix: md-sys-color,
+        ),
+        // typography: (
+        //     use-system-variables: true, // 👈 Added
+        // ),
+        density: (
+            scale: 0,
+        ),
+    )
+);
+
+:root {
+    @include mat.all-component-themes($custom-theme);
+    @include mat.system-level-colors($custom-theme); // 👈 Added
+//     @include mat.system-level-typography($angular-material-theming-css-vars-theme); // 👈 Added
+}
+
+html {
+    --sys-primary: rgb(4 70 110);
+    --sys-surface-tint: rgb(47 98 140);
+    --sys-on-primary: rgb(255 255 255);
+    --sys-primary-container: rgb(71 121 164);
+    --sys-on-primary-container: rgb(255 255 255);
+    --sys-secondary: rgb(54 68 83);
+    --sys-on-secondary: rgb(255 255 255);
+    --sys-secondary-container: rgb(103 118 134);
+    --sys-on-secondary-container: rgb(255 255 255);
+    --sys-tertiary: rgb(75 60 93);
+    --sys-on-tertiary: rgb(255 255 255);
+    --sys-tertiary-container: rgb(127 110 145);
+    --sys-on-tertiary-container: rgb(255 255 255);
+    --sys-error: rgb(140 0 9);
+    --sys-on-error: rgb(255 255 255);
+    --sys-error-container: rgb(218 52 46);
+    --sys-on-error-container: rgb(255 255 255);
+    --sys-background: rgb(247 249 255);
+    --sys-on-background: rgb(24 28 32);
+    --sys-surface: rgb(247 249 255);
+    --sys-on-surface: rgb(24 28 32);
+    --sys-surface-variant: rgb(222 227 235);
+    --sys-on-surface-variant: rgb(62 67 74);
+    --sys-outline: rgb(90 95 102);
+    --sys-outline-variant: rgb(118 123 130);
+    --sys-shadow: rgb(0 0 0);
+    --sys-scrim: rgb(0 0 0);
+    --sys-inverse-surface: rgb(45 49 53);
+    --sys-inverse-on-surface: rgb(238 241 246);
+    --sys-inverse-primary: rgb(155 203 251);
+    --sys-primary-fixed: rgb(71 121 164);
+    --sys-on-primary-fixed: rgb(255 255 255);
+    --sys-primary-fixed-dim: rgb(44 96 137);
+    --sys-on-primary-fixed-variant: rgb(255 255 255);
+    --sys-secondary-fixed: rgb(103 118 134);
+    --sys-on-secondary-fixed: rgb(255 255 255);
+    --sys-secondary-fixed-dim: rgb(79 93 109);
+    --sys-on-secondary-fixed-variant: rgb(255 255 255);
+    --sys-tertiary-fixed: rgb(127 110 145);
+    --sys-on-tertiary-fixed: rgb(255 255 255);
+    --sys-tertiary-fixed-dim: rgb(101 85 119);
+    --sys-on-tertiary-fixed-variant: rgb(255 255 255);
+    --sys-surface-dim: rgb(216 218 224);
+    --sys-surface-bright: rgb(247 249 255);
+    --sys-surface-container-lowest: rgb(255 255 255);
+    --sys-surface-container-low: rgb(241 243 249);
+    --sys-surface-container: rgb(236 238 243);
+    --sys-surface-container-high: rgb(230 232 238);
+    --sys-surface-container-highest: rgb(224 226 232);
+
+
+    
+}
+
+.dark {
+    --sys-primary: rgb(159 207 255);
+    --sys-surface-tint: rgb(155 203 251);
+    --sys-on-primary: rgb(0 24 42);
+    --sys-primary-container: rgb(101 149 194);
+    --sys-on-primary-container: rgb(0 0 0);
+    --sys-secondary: rgb(189 204 222);
+    --sys-on-secondary: rgb(8 23 36);
+    --sys-secondary-container: rgb(131 146 163);
+    --sys-on-secondary-container: rgb(0 0 0);
+    --sys-tertiary: rgb(215 195 235);
+    --sys-on-tertiary: rgb(29 16 45);
+    --sys-tertiary-container: rgb(156 137 174);
+    --sys-on-tertiary-container: rgb(0 0 0);
+    --sys-error: rgb(255 186 177);
+    --sys-on-error: rgb(55 0 1);
+    --sys-error-container: rgb(255 84 73);
+    --sys-on-error-container: rgb(0 0 0);
+    --sys-background: rgb(16 20 24);
+    --sys-on-background: rgb(224 226 232);
+    --sys-surface: rgb(16 20 24);
+    --sys-on-surface: rgb(250 250 255);
+    --sys-surface-variant: rgb(66 71 78);
+    --sys-on-surface-variant: rgb(198 203 211);
+    --sys-outline: rgb(158 163 171);
+    --sys-outline-variant: rgb(126 132 139);
+    --sys-shadow: rgb(0 0 0);
+    --sys-scrim: rgb(0 0 0);
+    --sys-inverse-surface: rgb(224 226 232);
+    --sys-inverse-on-surface: rgb(39 42 47);
+    --sys-inverse-primary: rgb(15 75 116);
+    --sys-primary-fixed: rgb(206 229 255);
+    --sys-on-primary-fixed: rgb(0 18 34);
+    --sys-primary-fixed-dim: rgb(155 203 251);
+    --sys-on-primary-fixed-variant: rgb(0 57 92);
+    --sys-secondary-fixed: rgb(213 228 247);
+    --sys-on-secondary-fixed: rgb(4 18 31);
+    --sys-secondary-fixed-dim: rgb(185 200 218);
+    --sys-on-secondary-fixed-variant: rgb(41 56 70);
+    --sys-tertiary-fixed: rgb(238 219 255);
+    --sys-on-tertiary-fixed: rgb(24 10 40);
+    --sys-tertiary-fixed-dim: rgb(211 191 230);
+    --sys-on-tertiary-fixed-variant: rgb(62 48 79);
+    --sys-surface-dim: rgb(16 20 24);
+    --sys-surface-bright: rgb(54 57 62);
+    --sys-surface-container-lowest: rgb(11 15 18);
+    --sys-surface-container-low: rgb(24 28 32);
+    --sys-surface-container: rgb(28 32 36);
+    --sys-surface-container-high: rgb(39 42 47);
+    --sys-surface-container-highest: rgb(50 53 57);
+}
+@import '../../../node_modules/@angular/material/prebuilt-themes/cyan-orange.css'; 
+
 @import "../../../node_modules/bulma/bulma.scss";
 @import "../../../node_modules/bulma/css/bulma.css";
 
@@ -23,11 +161,13 @@
 // @import "../../../node_modules/bulma/sass/layout/section.scss";
 @import "../../../node_modules/bulma/sass/layout/level.scss";
 @import "../../../node_modules/bulma/sass/grid/columns.scss";
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';
+
+@import './app/shared/themes/calendar_green.scss';
 
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@import './app/styles/bulma_edits.scss';
+@import './app/styles/bootstrap_edits.scss';
 
-/* Importing Bootstrap SCSS file. */
-@import 'bootstrap/scss/bootstrap';

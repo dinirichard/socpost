@@ -4,11 +4,17 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 
 import { animate, scroll } from "motion";
 import { AuthService } from "../../services/auth.service";
+import { MatIconModule } from "@angular/material/icon";
+import { MatButtonModule } from "@angular/material/button";
 
 @Component({
     selector: "app-navbar",
     standalone: true,
-    imports: [RouterLink, RouterOutlet, RouterLinkActive, MatToolbarModule],
+    imports: [
+        RouterLink, RouterOutlet, 
+        RouterLinkActive, MatToolbarModule, 
+        MatIconModule, MatButtonModule
+    ],
     templateUrl: "./nav-bar.component.html",
     styleUrl: "./nav-bar.component.scss",
     // host: {
@@ -20,6 +26,12 @@ export class NavBarComponent {
     // navbarVisible = signal(true);
     // hover = signal(false);
     // navbar = viewChild.required<ElementRef>("navbar");
+
+    darkMode = signal(true);
+
+    setDarkMode = effect(() => {
+        document.documentElement.classList.toggle('dark', this.darkMode());
+    });
 
     authService = inject(AuthService);
     router = inject(Router);
