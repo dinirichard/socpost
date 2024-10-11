@@ -48,31 +48,31 @@
 
 
 
-/* Style for the sidebar */
-.sidenav {
-    // height: 100%;
-    width: 500px;
-    position: fixed;
-    // top: 0;
-    // left: 0;
-    background-color: #111;
-    overflow-x: hidden;
-    transition: 0.5s;
-    // padding-top: 60px;
-  }
+// /* Style for the sidebar */
+// .sidenav {
+//     // height: 100%;
+//     width: 500px;
+//     position: fixed;
+//     // top: 0;
+//     // left: 0;
+//     background-color: #111;
+//     overflow-x: hidden;
+//     transition: 0.5s;
+//     // padding-top: 60px;
+//   }
   
-  .sidenav a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    font-size: 18px;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-  }
+//   .sidenav a {
+//     padding: 8px 8px 8px 32px;
+//     text-decoration: none;
+//     font-size: 18px;
+//     color: #818181;
+//     display: block;
+//     transition: 0.3s;
+//   }
   
-  .sidenav a:hover {
-    color: #f1f1f1;
-  }
+//   .sidenav a:hover {
+//     color: #f1f1f1;
+//   }
   
   /* Main content area */
   .main-content {
@@ -95,6 +95,10 @@
 }
 .video-title {
   margin-bottom: 0px;
+}
+
+.video-kids {
+  color: var(--sys-on-surface);
 }
 .shorts-video {
   height: 380px;
@@ -121,5 +125,66 @@
 }
 .light-blue-backdrop {
   background-color: #5cb3fd;
+}
+
+.selected-Date {
+  color: var(--sys-on-surface);
+}
+
+
+
+
+
+
+
+
+
+
+// section {
+//   display: table;
+// }
+
+// .example-label {
+//   display: table-cell;
+//   font-size: 14px;
+//   margin-left: 8px;
+//   min-width: 120px;
+// }
+
+.example-button-row {
+  min-width: 120px;
+  max-width: 600px;
+}
+
+.example-button-row .mat-mdc-button-base {
+  margin: 8px 8px 8px 0;
+}
+
+.buttons-group {
+
+  .cancel-btn{
+    width: 200px;
+    color: var(--sys-on-background);
+  }
+
+  .draft-btn {
+    width: 200px;
+    // background-color: var(--sys-primary-container);
+    color: var(--sys-on-background);
+    margin-right: 1rem;
+  }
+
+  .save-btn {
+    width: 200px;
+    background-color: var(--sys-primary-container);
+    color: var(--sys-on-primary-container);
+    border-radius: 35px;
+    height: 40px;
+  }
+
+}
+
+mat-divider {
+    padding: 0.5rem 0rem;
 }
   

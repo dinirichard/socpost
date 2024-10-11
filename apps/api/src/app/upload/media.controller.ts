@@ -5,6 +5,7 @@ import {
     Param,
     ParseFilePipeBuilder,
     Post,
+    Query,
     Req,
     Res,
     UploadedFile,
@@ -40,23 +41,38 @@ export class MediaController {
         return this.mediaService.saveFile(orgId, originalName, uploadUrl, fileType);
     }
 
-    @Post("uploadImage")
+    @Post("/uploadMedia/:orgId")
+    @UseGuards(PassportJwtAuthGuard)
+    @UseInterceptors(FileInterceptor("file"))
+    @UsePipes(new CustomUploadPipe())
+    async UploadAll(
+        @UploadedFile() file: Multer.File,
+        @Param('orgId') orgId: string,
+    ) {
+        Logger.log( file, 'file');
+        Logger.log( orgId, 'orgId');
+        // const key = makeId(7);
+        
+        // const upload = await simpleUpload(file.buffer, key, file.mimetype);
+
+        return this.mediaService.saveFile(orgId, file.originalname, file.path, file.mimetype);
+    }
+
+    @Post("/uploadImage/:orgId")
     @UseGuards(PassportJwtAuthGuard)
     @UseInterceptors(FileInterceptor("image"))
     @UsePipes(new CustomUploadPipe())
     async UploadFile(
         @UploadedFile() file: Multer.File,
-        @Req() req: Request,
+        @Param('orgId') orgId: string,
     ) {
-        const { orgId } = req.body;
-        const key = makeId(7);
-        
-        const upload = await simpleUpload(file.buffer, key, file.mimetype);
+        Logger.log( file, 'file');
+        Logger.log( orgId, 'orgId');
 
-        return this.mediaService.saveFile(orgId, file.originalname, upload, file.mimetype);
+        return this.mediaService.saveFile(orgId, file.filename, file.path, file.mimetype);
     }
 
-    @Post("uploadAnyFiles/:orgId")
+    @Post("/uploadAnyFiles/:orgId")
     // @UseGuards(PassportJwtAuthGuard)
     @UseInterceptors(AnyFilesInterceptor())
     @UsePipes(new CustomUploadPipe())

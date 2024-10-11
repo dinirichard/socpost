@@ -16,13 +16,7 @@ export class FileUploadService {
     formData.append('file', file);
     console.log( file, 'Form Data');
     const orgId = localStorage.getItem("orgId");
-
-    // return this.httpClient.post(`${this.baseUrl}/upload`, formData, {
-    //     reportProgress: true,
-    //     responseType: 'json'
-    //   });
-
-    const req = new HttpRequest('POST', `${this.baseUrl}/uploadAnyFiles/${orgId}`, formData, {
+    const req = new HttpRequest('POST', `${this.baseUrl}/uploadMedia/${orgId}`, formData, {
       reportProgress: true,
       responseType: 'json'
     });
@@ -30,22 +24,15 @@ export class FileUploadService {
     return this.httpClient.request(req);
   }
 
-  uploadMultiple(files: FileList): Observable<number> {
+  uploadMultiple(file: File): Observable<number> {
     const formData = new FormData();
+    formData.append('file', file);
     const orgId = localStorage.getItem("orgId");
-    for (let i = 0; i < files.length; i++) {
-      formData.append('files', files[i], files[i].name);
-    }
+    // for (let i = 0; i < files.length; i++) {
+    //   formData.append('files', files[i], files[i].name);
+    // }
 
-    const req = new HttpRequest('POST', `${this.baseUrl}/uploadAnyFiles/${orgId}`, formData, {
-      reportProgress: true,
-      headers: new HttpHeaders({
-        'enctype': 'multipart/form-data',
-        // 'Content-Type': 'multipart/form-data',
-      })
-    });
-
-    return this.httpClient.post(`${this.baseUrl}/uploadAnyFiles/${orgId}`, formData, {
+    return this.httpClient.post(`${this.baseUrl}/uploadMedia/${orgId}`, formData, {
       'reportProgress': true,
       'headers': {
         'Content-Type': 'multipart/form-data',
@@ -62,19 +49,6 @@ export class FileUploadService {
         }
       })
     );
-
-    // return this.httpClient.request(req).pipe(
-    //   map(event => {
-    //     switch (event.type) {
-    //       case HttpEventType.UploadProgress:
-    //         return Math.round((100 * event.loaded) / (event.total ?? 1));
-    //       case HttpEventType.Response:
-    //         return 100;
-    //       default:
-    //         return 0;
-    //     }
-    //   })
-    // );
   }
 
   getFiles(): Observable<any> {

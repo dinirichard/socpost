@@ -1,16 +1,13 @@
 @use "../../../node_modules/@angular/material" as mat;
 @include mat.core();
 
-// @tailwind base;
-// @tailwind components;
-// @tailwind utilities; 
 @import "../../../node_modules/@angular/cdk/overlay-prebuilt.css";
 
 
 
 
 html, body { height: 100%; }
-// body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Playfair Display, Lato; }
 
 
 //* THEME-BUILDER link: http://material-foundation.github.io?primary=%23034F7C&bodyFont=Lato&displayFont=Playfair+Display&colorMatch=true
@@ -20,14 +17,24 @@ $custom-theme: mat.define-theme(
             use-system-variables: true,
             // system-variables-prefix: md-sys-color,
         ),
-        // typography: (
-        //     use-system-variables: true, // 👈 Added
-        // ),
+        typography: 
+        // $custom-typography
+        (
+            use-system-variables: true, // 👈 Added
+            brand-family: 'Playfair Display',
+            plain-family: 'Lato',
+            // bold-weight:
+            // medium-weight:
+            // regular-weight:
+            // system-variables-prefix:
+        )
+        ,
         density: (
             scale: 0,
         ),
     )
 );
+
 
 :root {
     @include mat.all-component-themes($custom-theme);
@@ -85,9 +92,6 @@ html {
     --sys-surface-container: rgb(236 238 243);
     --sys-surface-container-high: rgb(230 232 238);
     --sys-surface-container-highest: rgb(224 226 232);
-
-
-    
 }
 
 .dark {
@@ -162,7 +166,7 @@ html {
 @import "../../../node_modules/bulma/sass/layout/level.scss";
 @import "../../../node_modules/bulma/sass/grid/columns.scss";
 /* Importing Bootstrap SCSS file. */
-@import 'bootstrap/scss/bootstrap';
+@import '../../../node_modules/bootstrap/scss/bootstrap';
 
 @import './app/shared/themes/calendar_green.scss';
 

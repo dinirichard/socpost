@@ -16,7 +16,24 @@ export class UploadService {
     baseUrl = "http://localhost:3000/api/media";
     // constructor() { }
 
-    async simpleImageUpload(file: File) {
+    upload(file: File){
+      const formData: FormData = new FormData();
+  
+      formData.append('file', file);
+      console.log( file, 'Form Data');
+      const orgId = localStorage.getItem("orgId");
+      // const req = new HttpRequest('POST', `${this.baseUrl}/uploadMedia/${orgId}`, formData, {
+      //   reportProgress: true,
+      //   responseType: 'json'
+      // });
+  
+      return this.httpClient.post(`${this.baseUrl}/uploadMedia/${orgId}`, formData, {
+        reportProgress: true,
+        responseType: 'json'
+      });
+    }
+
+    async simpleImageUploadS3(file: File) {
         const key = makeId(10);
         const upload = await simpleUpload(file, key, file.type);
       
@@ -32,7 +49,7 @@ export class UploadService {
       });
     }
 
-    async largeMediaUpload(file: File) {
+    async largeMediaUploadS3(file: File) {
       const hash = await this.getFileHash(file);
       const orgId = localStorage.getItem("orgId");
 

@@ -1,0 +1,19 @@
+meta {
+  name: diskStorage
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:3000/api/media/uploadMedia/ec31ea30-0ca0-4f14-8eeb-a9b62a5b4aa6
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0YWVkMDk0Ny00NGFmLTQ1ZTItOTE5ZC1mMDZmYTA0MDEyZjAiLCJlbWFpbCI6ImpvaG5Ad2F5bmUuY29tIiwiaWF0IjoxNzI4NTgxNzk0LCJleHAiOjE3Mjg4NDA5OTR9.850OJ_-qSlJbEmOVbcosPKRwNyURNt13MWN2MZ27QEI
+}
+
+body:multipart-form {
+  file: @file(C:\Users\Admin\Videos\125314-733046618.mp4)
+}

@@ -11,10 +11,20 @@
             </div>
             <h6 class="column video-title">{{this.postDetails.get('title')?.value}}</h6>
             <div>
-                <div class="selected-Date">
+                <div class="selected-Date" mat-body-medium>
                     {{calenderArgs.toLocaleDateString('en-GB', {weekday: 'short'})}} {{calenderArgs.toLocaleDateString('en-GB')}}
                 </div>
-                <ngb-timepicker [(ngModel)]="time" [minuteStep]="30" [spinners]="timeSpinners" size="small"/>
+                <ngb-timepicker [formControl]="timeControl" [minuteStep]="30" [spinners]="timeSpinners" size="small" required/>
+                @if (timeControl.valid) {
+                    <div class="small form-text text-success">Great!</div>
+                }
+                @if (timeControl.errors) {
+                    <div class="small form-text text-danger">
+                        @if (timeControl.errors['required']) {
+                            <div>Select post time</div>
+                        }
+                    </div>
+                }
             </div>
             
 
@@ -58,7 +68,7 @@
                                 <textarea matInput formControlName="description"></textarea>
                             </mat-form-field>
                         </div>
-                        <div  class="video-kids">
+                        <div  class="video-kids" mat-body-medium>
                             Made for Kids?
                             <label class="example-margin"></label>
                             <mat-radio-group formControlName="forKids">
@@ -136,10 +146,7 @@
         <!--  -->
         <!--  -->
         <!--  -->
-        <!-- <div align="end"> -->
-            <!-- <button mat-button mat-dialog-close>Cancel</button> -->
-            <!-- <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button> -->
-        <!-- </div> -->
+        
     </div>
 <!--  -->
 
@@ -164,6 +171,18 @@
             <app-file-upload [aspectRatio]="aspectRatio()" (uploadFile)="getUploadedFile($event)"></app-file-upload>
         </div>
 
+    </div>
+
+     <mat-divider></mat-divider>
+
+    <div align="end" class="buttons-group">
+        <button mat-button class="cancel-btn" (click)="onClose()">Cancel</button>
+        <button mat-stroked-button class="draft-btn" [hidden]="!uploadedFile ? true : false">
+            Save as Draft
+        </button>
+        <button mat-fab class="save-btn" [hidden]="!uploadedFile ? true : false" (click)="onSubmit()">
+            Save Post
+        </button>
     </div>
 </section>
 

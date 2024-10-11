@@ -24,6 +24,8 @@ import MonthTimeRangeSelectedArgs = DayPilot.MonthTimeRangeSelectedArgs;
 import { Tag } from "@prisma/client";
 import { TagsInputComponent } from "../../../components/tags-input/tags-input.component";
 import { ImageUploadComponent } from "../../file-uploads/image/image-upload.component";
+import { CustomValidators } from "../../../shared/validators/time.validator";
+import { MatDividerModule } from "@angular/material/divider";
 // import { ToastTemplatesComponent } from "../../../shared/toast/toast-templates.component";
 
 
@@ -39,7 +41,8 @@ import { ImageUploadComponent } from "../../file-uploads/image/image-upload.comp
         MatProgressBarModule, MatSliderModule,
         MatButtonToggleModule, MatCheckboxModule,
         MatRadioModule, MatSliderModule,
-        NgbTimepickerModule, TagsInputComponent
+        NgbTimepickerModule, TagsInputComponent,
+        MatDividerModule
     ],
     providers: [ ProvidersStore ],
     templateUrl: "./youtube.post.html",
@@ -49,10 +52,6 @@ import { ImageUploadComponent } from "../../file-uploads/image/image-upload.comp
 export class YoutubePostComponent implements OnInit {
     activeModal = inject(NgbActiveModal);
     readonly store = inject(ProvidersStore);
-
-    time = { hour: 13, minute: 30 };
-    timeSpinners = false;
-    calenderArgs = new Date(this.store.calenderArgs()!);
 
     videoMedia = viewChild<ElementRef<HTMLVideoElement>>('video');
     videoSlider = signal(0);
@@ -74,7 +73,10 @@ export class YoutubePostComponent implements OnInit {
     computedCollasped = computed(() => this.collasped() ? '70px' : '250px');
     sideNavWidthOutput = output<string>();
 
-    timeControl = new FormControl<NgbTimeStruct | null>(null, {validators: Validators.required});
+    timeSpinners = false;
+    calenderArgs = new Date(this.store.calenderArgs()!);
+    timeControl = new FormControl<NgbTimeStruct | null>(null, CustomValidators.TimeValidator);
+
     tagsAvailable: Tag[] = [
       {id: 'dfdfdf', name: 'video'},
       {id: 'hjklhuu', name: 'short'},
@@ -144,7 +146,9 @@ export class YoutubePostComponent implements OnInit {
       this.postDetails.get('title')?.setValue(file.name);
       this.postDetails.get('videoKind')?.setValue(this.videoKindControl.value);
       console.log(this.postDetails.value);
-      this.activeModal.update({ size: 'xl' });
+      this.activeModal.update({ 
+        size: 'xl',
+      });
     }
 
     toggleSection(sectionId: string) {
@@ -183,6 +187,14 @@ export class YoutubePostComponent implements OnInit {
       }
 
       onSubmit(){
+        if (this.timeControl.valid && this.timeControl.value){
+            this.calenderArgs.setHours(this.timeControl.value?.hour, this.timeControl.value?.minute);
+        }
+
+        const tags = this.postDetails.get('tags')?.value || [];
+
+        console.log('Form Tags', this.postDetails.get('tags')?.value);
+
         // const post: Post = {
         //   organizationId: this.store.orgId(),
         //   publishDate: this.store.calenderArgs(),
@@ -192,13 +204,14 @@ export class YoutubePostComponent implements OnInit {
         //   description: this.postDetails.get('description')?.value || '',
         //   videoKind: this.postDetails.get('videoKind')?.value || '',
         //   forKids: this.postDetails.get('forKids')?.value || false,
-        //   tags: this.postDetails.get('tags')?.value || [],
+        //   tags: tags,
         // }
+
+        // this.activeModal.close(post);
       }
 
       onClose() {
-        // this.modalService.modalInstances
-        // this.modalService.close(this.videoDetails.value);
+        this.activeModal.close();
       }
       
     

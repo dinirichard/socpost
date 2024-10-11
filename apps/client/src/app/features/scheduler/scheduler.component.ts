@@ -18,6 +18,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SelectConnectionDialogComponent } from '../../components/select-connection/select-connection-dialog.component';
 import { ProvidersStore } from '../../core/signal-states/providers.state';
 import { Provider } from '../../models/provider.dto';
+import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 
 
 
@@ -29,12 +30,9 @@ export interface DialogCalPostData {
   selector: 'app-scheduler',
   standalone: true,
   imports: [
-    DayPilotModule,
-    MatIconModule,
-    MatButtonModule, 
-    MatFormFieldModule, 
-    MatInputModule, 
-    FormsModule, 
+    DayPilotModule, MatIconModule,
+    MatButtonModule, MatFormFieldModule, 
+    MatInputModule, FormsModule, 
     MatDialogModule
   ],
   providers: [SchedulerService, ProvidersStore ],
@@ -270,11 +268,19 @@ export class SchedulerComponent
       centered: false,
       size: 'l',
       modalDialogClass: 'dark-modal',
+      keyboard: false,
+      backdrop: 'static',
 
     });
     modalRef.closed.subscribe( val => {
       console.log(val)
     });
+  }
+
+  snackbarService = inject(SnackbarService);
+
+  snackbar(type:string, message: string) {
+    this.snackbarService.openSnackbar(type, message);
   }
 }
 
