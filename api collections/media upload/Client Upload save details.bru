@@ -1,0 +1,24 @@
+meta {
+  name: Client Upload save details
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:3000/api/media/saveUploads
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0YWVkMDk0Ny00NGFmLTQ1ZTItOTE5ZC1mMDZmYTA0MDEyZjAiLCJlbWFpbCI6ImpvaG5Ad2F5bmUuY29tIiwiaWF0IjoxNzI4NTgxNzk0LCJleHAiOjE3Mjg4NDA5OTR9.850OJ_-qSlJbEmOVbcosPKRwNyURNt13MWN2MZ27QEI
+}
+
+body:json {
+  {
+    "orgId": "ec31ea30-0ca0-4f14-8eeb-a9b62a5b4aa6",
+    "originalName": "test",
+    "uploadUrl": "https://pub-b09994db08e74f638c011e6771e6f600.r2.dev/resources/4e016611aa5fd40df93b824125c036bfd7bb44b108b10bd51bf1b7510bd3c429/8Xfp4Iuohi.mp4",
+    "fileType": "video/mp4"
+  }
+}

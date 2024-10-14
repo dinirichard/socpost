@@ -80,13 +80,13 @@ model Organization {
 // }
 
 model Media {
-    id             String       @id @default(uuid())
+    id             String                    @id @default(uuid())
     name           String
     path           String
     fileType       String
-    createdAt      DateTime     @default(now())
-    updatedAt      DateTime     @updatedAt
-    organization   Organization @relation(fields: [organizationId], references: [id])
+    createdAt      DateTime                  @default(now())
+    updatedAt      DateTime                  @updatedAt
+    organization   Organization              @relation(fields: [organizationId], references: [id])
     organizationId String
 }
 
@@ -105,23 +105,30 @@ model Post {
     video          String?
     videoKind      String?
     approval       APPROVED_SUBMIT_FOR_ORDER
-    publishDate    DateTime                  @default(now())
+    publishDate    DateTime                  
     createdAt      DateTime                  @default(now())
     updatedAt      DateTime                  @updatedAt
-    deletedAt      DateTime                  @updatedAt
+    deletedAt      DateTime?                  
     organization   Organization              @relation(fields: [organizationId], references: [id])
     organizationId String
     integration    Integration               @relation(fields: [integrationId], references: [id])
     integrationId  String
-    tags           Tag[]
+    tags           TagsOnPosts[]
 }
 
-model Tag {
-    id    String @id @default(uuid())
-    name   String  @unique
-    posts Post[]
+model Tag { 
+    id    String                             @id @default(uuid())
+    name   String                            @unique
+    posts TagsOnPosts[]
+}
 
-    @@index([name])
+model TagsOnPosts {
+  post              Post                     @relation(fields: [postId], references: [id])
+  postId            String 
+  tag               Tag                      @relation(fields: [tagId], references: [id])
+  tagId             String 
+
+  @@id([postId, tagId])
 }
 
 enum Provider {

@@ -62,32 +62,14 @@ export async function simpleUpload(
   contentType: string
 ) {
   try {
-        console.log( R2upload, 'Upload Start');
-        // const parallelUploads3 = new Upload({
-        //     client: R2upload,
-        //     params: {
-        //         Bucket: CLOUDFLARE_BUCKETNAME,
-        //         ACL: "public-read",
-        //         Key: key,
-        //         Body: data,
-        //         ContentType: contentType,
-        //     },
-        // });
-        // parallelUploads3.on("httpUploadProgress", (progress: Progress) => { 
-        //   // Handle the 'www' result here (if provided by the event)
-        //   console.log('Upload complete!', progress.total); 
-        // });
-        // const www = parallelUploads3.done();
-      
+              
         const command = new PutObjectCommand( {
           Bucket: CLOUDFLARE_BUCKETNAME,
           Key: key,
           Body: data,
           ContentType: contentType,
         });
-        const www = await R2upload.send(command);
-        console.log( www, 'Upload End');
-        return www;
+        return await R2upload.send(command);
   } catch (error) {
       console.error(error, 'Error');
       throw new Error('Error');
@@ -101,7 +83,7 @@ export async function createMultipartUpload(body: any ) {
   try {
     const params = {
       Bucket: CLOUDFLARE_BUCKETNAME,
-      Key: `resources/${fileHash}/${filename}`,
+      Key: `resources/${filename}.${file.type.split('/').at(-1)}`,
       ContentType: contentType,
       Metadata: {
         'x-amz-meta-file-hash': fileHash,

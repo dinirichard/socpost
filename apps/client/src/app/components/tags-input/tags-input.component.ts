@@ -48,11 +48,8 @@ export class TagsInputComponent  implements OnInit {
     readonly filteredTags = computed(() => {
       const currentTag = this.currentTag().toLowerCase();
       const aTags = this.tagsAvailable ?? [{ id: '', name: '' }];
-      console.log('aTags', aTags);
       const bTags = this.tagsSignal() ?? [{ id: '', name: '' }];
-      console.log('bTags', bTags);
       const cTags = aTags.filter((value) => !bTags.includes(value));
-      console.log('cTags', cTags);
   
       return currentTag
         ? cTags.filter((tag) => tag.name.toLowerCase().includes(currentTag))

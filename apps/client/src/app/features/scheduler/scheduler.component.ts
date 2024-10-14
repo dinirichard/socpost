@@ -43,7 +43,8 @@ export interface DialogCalPostData {
 export class SchedulerComponent 
   implements AfterViewInit 
   {
-    readonly providerStore = inject(ProvidersStore);
+  readonly providerStore = inject(ProvidersStore);
+  snackbarService = inject(SnackbarService);
   collasped = signal(false);
   computedCollasped = computed(() => this.collasped() ? '70px' : '250px');
   sideNavWidthOutput = output<string>();
@@ -277,7 +278,7 @@ export class SchedulerComponent
     });
   }
 
-  snackbarService = inject(SnackbarService);
+
 
   snackbar(type:string, message: string) {
     this.snackbarService.openSnackbar(type, message);

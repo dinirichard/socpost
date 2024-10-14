@@ -1,0 +1,41 @@
+meta {
+  name: Create Post
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/posts/savePost
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0YWVkMDk0Ny00NGFmLTQ1ZTItOTE5ZC1mMDZmYTA0MDEyZjAiLCJlbWFpbCI6ImpvaG5Ad2F5bmUuY29tIiwiaWF0IjoxNzI4Njk1MzMwLCJleHAiOjE3Mjg5NTQ1MzB9.ac34GeMPZdHhKYbIRMcM9_HjEf5iHs1MqaxgzzXWPZk
+}
+
+body:json {
+  {
+    "organizationId": "ec31ea30-0ca0-4f14-8eeb-a9b62a5b4aa6",
+    "publishDate": "2024-10-30T10:30:00.000Z",
+    "integrationId": "f3ba936a-5834-45f3-9019-605d67de546d",
+    "approval": "YES",
+    "title": "test 2",
+    "description": "description test 2",
+    "videoKind": "video",
+    "forKids": false,
+    "tags": [
+      {
+        "id": "",
+        "name": "short"
+      },
+      {
+        "id": "",
+        "name": "test"
+      }
+    ],
+    "video": "65d7c0d0-6db8-4d35-a07b-087ac14b6f36",
+    "image": "613d5d9c-c5e9-4ff3-9f12-4b3c76ec3287",
+    "provider": "youtube"
+  }
+}

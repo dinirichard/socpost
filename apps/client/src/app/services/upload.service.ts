@@ -1,12 +1,11 @@
-import { HttpClient, HttpRequest } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
+import * as CryptoJS from 'crypto-js';
 
+import { environment } from '../../environments/environment';
 import { makeId } from "@socpost/libraries/nest/lib/services/make.is";
 import { abortMultipartUpload, completeMultipartUpload, createMultipartUpload, signPart, simpleUpload } from "@socpost/libraries/nest/lib/upload/r2.uploader";
-import { map, Observable } from 'rxjs';
-import * as crypto from 'crypto';
-import * as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root'
@@ -22,10 +21,6 @@ export class UploadService {
       formData.append('file', file);
       console.log( file, 'Form Data');
       const orgId = localStorage.getItem("orgId");
-      // const req = new HttpRequest('POST', `${this.baseUrl}/uploadMedia/${orgId}`, formData, {
-      //   reportProgress: true,
-      //   responseType: 'json'
-      // });
   
       return this.httpClient.post(`${this.baseUrl}/uploadMedia/${orgId}`, formData, {
         reportProgress: true,
@@ -33,19 +28,28 @@ export class UploadService {
       });
     }
 
-    async simpleImageUploadS3(file: File) {
+    simpleImageUploadS3(file: File): Observable<any> {
         const key = makeId(10);
-        const upload = await simpleUpload(file, key, file.type);
-      
         const orgId = localStorage.getItem("orgId");
-      
-        const uploadUrl = environment.CLOUDFLARE_BUCKET_URL + '/' + key + '.' + file.type.split('/').at(-1);
-      
+        const newFileName = key + '.' + file.type.split('/').at(-1);
+        const uploadUrl = environment.CLOUDFLARE_BUCKET_URL + '/' + newFileName;
+        
+        const upload = simpleUpload(file, newFileName, file.type);  
+        console.log('upload', upload);
         return this.httpClient.post(`${this.baseUrl}/saveUploads`, {
           orgId,
-          originalName: key,
+          originalName: file.name,
           uploadUrl,
           fileType: file.type
+        });
+    }
+
+    saveMediaData(orgId: string | null, originalName: string, uploadUrl: string, fileType: string): Observable<any> {
+      return this.httpClient.post(`${this.baseUrl}/saveUploads`, {
+        orgId,
+        originalName,
+        uploadUrl,
+        fileType
       });
     }
 
@@ -55,7 +59,7 @@ export class UploadService {
 
       const { uploadId, key } = await createMultipartUpload( {file, fileHash: hash, contentType: file.type});
       const parts = [];
-      // let presignedUrls: string[] = [];
+      const uploadUrl = environment.CLOUDFLARE_BUCKET_URL + '/' + key;
       const totalParts = Math.ceil(file.size / (5 * 1024 * 1024));
 
       for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
@@ -72,27 +76,28 @@ export class UploadService {
                 });
                 const etag = response.headers.get('ETag'); 
                 parts.push({ ETag: etag, PartNumber: partNumber });
-              }      
+            }     
               
         } catch (error) {
           console.error(`Error uploading part ${partNumber}:`, error);
           abortMultipartUpload({ key, uploadId });
-          break; // Exit the loop if there's an error
+          return undefined;
         }
       }
-      console.log(parts, 'Parts')
+      
       try {
-          const res = completeMultipartUpload({key, uploadId, parts});
-          return this.httpClient.post(`${this.baseUrl}/saveUploads`, {
-            orgId,
-            originalName: file.name,
-            key,
-            fileType: file.type
-          });
+          await completeMultipartUpload({key, uploadId, parts});
+          console.log('completed multipart');
+          return {
+              orgId,
+              originalName: file.name,
+              uploadUrl,
+              fileType: file.type
+          };
       } catch (err) {
           console.log('Error', err);
-          return abortMultipartUpload({ key, uploadId });
-          throw new Error();
+          abortMultipartUpload({ key, uploadId });
+          return undefined;
       }
 
     }

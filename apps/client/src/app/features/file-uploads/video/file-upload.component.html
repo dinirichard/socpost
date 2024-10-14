@@ -8,8 +8,8 @@
 
 
 <div class="container" appDragDrop 
-  [style.height]="aspectRatio() === '16:9' ? '193px' : '300px'"
-  [style.width]="aspectRatio() === '16:9' ? '300px' : '233px'"
+  [style.height]="aspectRatio() === '16:9' ? '157px' : '280px'"
+  [style.width]="aspectRatio() === '16:9' ? '283px' : '209px'"
   (fileDropped)="onFileDropped($event)"
   >
 	<input type="file" #fileDropRef id="fileDropRef" (change)="fileBrowseHandler($event)" />
@@ -18,6 +18,7 @@
 	<h3>or</h3>
 	<label for="fileDropRef">Browse for file</label>
 </div>
+<mat-progress-bar [style.margin-top]="'1.5rem'" [hidden]="uploadStart()" [mode]="progressMode" [value]="progress()"></mat-progress-bar>
 
 
 <div class="files-list">
@@ -43,12 +44,12 @@
 		</div>
 		<div class="info">
 			<h4 class="name">
-				{{ file?.name }}
+				{{ file?.name }} 🙌 😥 
 			</h4>
 			<p class="size">
 				{{ formatBytes(file?.size, 2) }}
 			</p>
-			<mat-progress-bar [mode]="progressMode" [value]="progress()"></mat-progress-bar>
+			
 		</div>
 
 		<div class="delete" (click)="deleteFile(i)">

@@ -1,186 +1,201 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 <section class="p-7">
-    
-    <div class="youtube-dialog" [hidden]="uploadedFile ? false : true">
-        <div class="dialog-title columns is-mobile">
-            <div class="column is-1">
-                <figure class="image is-48x48">
-                    <img class="is-rounded profile-img" [src]="store.selectedProvider()?.picture || ''" />
-                    <img class="provider-img" [src]="store.selectedProvider()?.providerIdentifier + '.png' || 'youtube' + '.png'" />
-                </figure>
-            </div>
-            <h6 class="column video-title">{{this.postDetails.get('title')?.value}}</h6>
-            <div>
-                <div class="selected-Date" mat-body-medium>
-                    {{calenderArgs.toLocaleDateString('en-GB', {weekday: 'short'})}} {{calenderArgs.toLocaleDateString('en-GB')}}
+    @if(uploadedVideo !== undefined){
+        <div class="youtube-dialog">
+            <div class="dialog-title columns is-mobile">
+                <div class="column is-1">
+                    <figure class="image is-48x48">
+                        <img class="is-rounded profile-img" [src]="store.selectedProvider()?.picture || ''" />
+                        <img class="provider-img" [src]="store.selectedProvider()?.providerIdentifier + '.png' || 'youtube' + '.png'" />
+                    </figure>
                 </div>
-                <ngb-timepicker [formControl]="timeControl" [minuteStep]="30" [spinners]="timeSpinners" size="small" required/>
-                @if (timeControl.valid) {
-                    <div class="small form-text text-success">Great!</div>
-                }
-                @if (timeControl.errors) {
-                    <div class="small form-text text-danger">
-                        @if (timeControl.errors['required']) {
-                            <div>Select post time</div>
-                        }
+                <h6 class="column video-title">{{this.title.value}}</h6>
+                <div>
+                    <div class="selected-Date" mat-body-medium>
+                        {{calenderArgs.toLocaleDateString('en-GB', {weekday: 'short'})}} {{calenderArgs.toLocaleDateString('en-GB')}}
                     </div>
-                }
-            </div>
-            
+                    <ngb-timepicker [formControl]="timeControl" [minuteStep]="30" [spinners]="timeSpinners" size="small" required/>
+                    @if (timeControl.valid) {
+                        <div class="small form-text text-success">Great!</div>
+                    }
+                    @if (timeControl.errors) {
+                        <div class="small form-text text-danger">
+                            @if (timeControl.errors['required']) {
+                                <div>Select post time</div>
+                            }
+                        </div>
+                    }
+                </div>
 
-            <div class="column is-2">
-                <div class="flex justify-center items-center pr-4">
-                    <mat-button-toggle-group
+
+                <div class="column is-2">
+                    <div class="flex justify-center items-center pr-4">
+                        <mat-button-toggle-group
+                          name="Kind of Video"
+                          aria-label="Video Type"
+                          [hideSingleSelectionIndicator]="true"
+                          (click)="toggleNav()"
+                          [formControl]="formPageControl"
+                            >
+                            <mat-button-toggle value="details">
+                              <span class="material-symbols-outlined">
+                                  page_info
+                                  </span>
+                            </mat-button-toggle>
+                            <mat-button-toggle value="settings">
+                              <mat-icon>video_settings</mat-icon>
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
+                </div>
+            </div>
+            <!--  -->
+            <mat-progress-bar mode="buffer" 
+                [value]="progressValue" 
+                [style.border-top-width]="'0.5rem'"
+                [color]="progressValue === 100 ? 'lightgreen' : 'lightblue'" 
+                bufferValue="62"
+            >
+            </mat-progress-bar>
+
+            <div class="upload-content columns is-3 pt-3">
+                <div class="upload-form column is-two-thirds">
+                    <form class="example-form" (ngSubmit)="onSubmit()">
+                        <div class="video-details" id="">
+                            <div class="" [hidden]="formPageControl.value === 'settings'">
+                                <mat-form-field appearance="outline" class="video-name" >
+                                    <mat-label>Video Title</mat-label>
+                                    <input matInput type="text" [formControl]="title">
+                                </mat-form-field>
+                            </div>
+                            <div>
+                                <mat-form-field appearance="outline" class="video-desc" >
+                                    <mat-label>Description</mat-label>
+                                    <textarea matInput [formControl]="description"></textarea>
+                                </mat-form-field>
+                            </div>
+                            <div  class="video-kids" mat-body-medium>
+                                Made for Kids?
+                                <label class="example-margin"></label>
+                                <mat-radio-group [formControl]="forKids">
+                                    <mat-radio-button class="" [value]="true">True</mat-radio-button>
+                                    <mat-radio-button class="" [value]="false">False</mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                            <div  class="video-tags">
+                                <ui-tags-input
+                                    [tags]="tags.value"
+                                    [tagsAvailable]="tagsAvailable"
+                                    (tagsChanged)="onAddTag($event)"
+                                />
+                            </div>
+
+                            <div class="video-thumbnail">
+                                Thumbnail<span [style.color]="'red'">*</span>
+                                <div class="video-thumbnail-grp" [style.height]="aspectRatio()  === '16:9' ? '125px' : '160'">
+                                    @if (aspectRatio()  === '16:9') {
+                                        <app-image-upload 
+                                            [aspectRatio]="aspectRatio()" 
+                                            [multiple]="multipleImages()"
+                                            [sizeLimit]="sizeLimit()"
+                                            [fileFormats]="imageFormats()"
+                                            (uploadFile)="getUploadedThumbnail($event)" 
+                                        >
+                                        </app-image-upload>
+                                    } @else {
+                                        <app-image-upload 
+                                            [aspectRatio]="aspectRatio()"
+                                            [multiple]="multipleImages()"
+                                            [sizeLimit]="sizeLimit()"
+                                            [fileFormats]="imageFormats()"
+                                            (uploadFile)="getUploadedThumbnail($event)"
+                                        >
+                                        </app-image-upload>
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+                    
+                    </form>
+                </div>
+                <div class="upload-media column">
+                    @defer (on timer(10s)) {
+                        <div>
+                            @if (aspectRatio()  === '16:9') {
+                                <figure class="image is-16by9 normal-video">
+                                    <video
+                                    #video
+                                    controls
+                                    [src]="uploadedVideo ? uploadedVideo.path : ''"
+                                    > 
+                                    </video>
+                                    <!-- <img src="https://bulma.io/assets/images/placeholders/640x360.png" /> -->
+                                </figure>
+                            } @else {
+                                <figure class="image is-9by16 shorts-video">
+                                  <!-- <img src="https://bulma.io/assets/images/placeholders/360x640.png" /> -->
+                                    <video
+                                      #video
+                                      controls
+                                      [src]="uploadedVideo ? uploadedVideo.path : ''"
+                                    > 
+                                    </video>
+                                </figure>
+                            }
+                        </div>
+                    } @placeholder {
+                        <mat-spinner></mat-spinner>
+                    }
+
+                </div>
+            </div>
+        </div>
+<!--  -->
+    } @else{
+        <div class="columns is-tablet m-2 is-5 ">
+            <div class="cloumn is-one-third-tablet">
+                <mat-button-toggle-group
                       name="Kind of Video"
                       aria-label="Video Type"
                       [hideSingleSelectionIndicator]="true"
-                      (click)="toggleNav()"
-                      [formControl]="formPageControl"
+                      (click)="toggleVideoKind()"
+                      [formControl]="videoKindControl"
                         >
-                        <mat-button-toggle value="details">
-                          <span class="material-symbols-outlined">
-                              page_info
-                              </span>
+                        <mat-button-toggle value="video">
+                            Video
                         </mat-button-toggle>
-                        <mat-button-toggle value="settings">
-                          <mat-icon>video_settings</mat-icon>
+                        <mat-button-toggle value="short">
+                            Short
                         </mat-button-toggle>
-                    </mat-button-toggle-group>
-                </div>
+                </mat-button-toggle-group>
             </div>
-        </div>
-        <!--  -->
-        <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
-
-        <div class="upload-content columns is-3 pt-3">
-            <div class="upload-form column is-two-thirds">
-                <form class="example-form" (ngSubmit)="onSubmit()" [formGroup]="postDetails">
-                    <div class="video-details" id="">
-                        <div class="" [hidden]="formPageControl.value === 'settings'">
-                            <mat-form-field appearance="outline" class="video-name" >
-                                <mat-label>Video Title</mat-label>
-                                <input matInput type="text" formControlName="title">
-                            </mat-form-field>
-                        </div>
-                        <div>
-                            <mat-form-field appearance="outline" class="video-desc" >
-                                <mat-label>Description</mat-label>
-                                <textarea matInput formControlName="description"></textarea>
-                            </mat-form-field>
-                        </div>
-                        <div  class="video-kids" mat-body-medium>
-                            Made for Kids?
-                            <label class="example-margin"></label>
-                            <mat-radio-group formControlName="forKids">
-                                <mat-radio-button class="" [value]="true">True</mat-radio-button>
-                                <mat-radio-button class="" [value]="false">False</mat-radio-button>
-                            </mat-radio-group>
-                        </div>
-                        <div  class="video-tags">
-                            <ui-tags-input
-                                [tags]="postDetails.get('tags')?.value"
-                                [tagsAvailable]="tagsAvailable"
-                                (tagsChanged)="onAddTag($event)"
-                            />
-                        </div>
-                    </div>
-                
-                
-                    <!-- <div class="main-content">
-                        <button class="open-btn" (click)="toggleNav()">☰ Open Sidebar</button>
-                        <p>Main Content Goes Here</p>
-                    </div> -->
-                
-                </form>
+            <div class="column">
+                <app-file-upload [aspectRatio]="aspectRatio()" (uploadFile)="getUploadedVideo($event)"></app-file-upload>
             </div>
-            <div class="upload-media column">
-                <div>
-                    @if (aspectRatio()  === '16:9') {
-                        <app-image-upload 
-                            [aspectRatio]="aspectRatio()" 
-                            [multiple]="multipleImages()"
-                            (uploadFile)="getUploadedFile($event)" 
-                        >
-                        </app-image-upload>
-                        <figure class="image is-16by9 normal-video">
-                            <!-- <video
-                            #video
-                            muted
-                            playsinline
-                            loop
-                            autoplay
-                            src="https://d85hka1o93tql.cloudfront.net/tools-homepage.mp4"
-                            > 
-                            </video> -->
-                            <img src="https://bulma.io/assets/images/placeholders/640x360.png" />
-                        </figure>
 
-                    <!-- <mat-slider [style.width]="'330px'" min="0" max="100" showTickMarks discrete [displayWith]="formatLabel">
-                        <input matSliderThumb [(ngModel)]="videoSlider()">
-                    </mat-slider> -->
-                    } @else {
-                        <app-image-upload 
-                            [aspectRatio]="aspectRatio()" 
-                            [multiple]="multipleImages()"
-                            (uploadFile)="getUploadedFile($event)" 
-                        >
-                        </app-image-upload>
-                        <figure class="image is-9by16 shorts-video">
-                          <img src="https://bulma.io/assets/images/placeholders/360x640.png" />
-                            <!-- <video
-                              #video
-                              muted
-                              playsinline
-                              loop
-                              autoplay
-                              src="https://d85hka1o93tql.cloudfront.net/tools-homepage.mp4"
-                            > 
-                            </video> -->
-                        </figure>
-                    }
-                </div>
-                
-            </div>
         </div>
-        <!--  -->
-        <!--  -->
-        <!--  -->
-        <!--  -->
-        
-    </div>
-<!--  -->
-
-    <div [hidden]="uploadedFile ? true : false" class="columns is-tablet m-2 is-5 ">
-        <div class="cloumn is-one-third-tablet">
-            <mat-button-toggle-group
-                  name="Kind of Video"
-                  aria-label="Video Type"
-                  [hideSingleSelectionIndicator]="true"
-                  (click)="toggleVideoKind()"
-                  [formControl]="videoKindControl"
-                    >
-                    <mat-button-toggle value="video">
-                        Video
-                    </mat-button-toggle>
-                    <mat-button-toggle value="short">
-                        Short
-                    </mat-button-toggle>
-            </mat-button-toggle-group>
-        </div>
-        <div class="column">
-            <app-file-upload [aspectRatio]="aspectRatio()" (uploadFile)="getUploadedFile($event)"></app-file-upload>
-        </div>
-
-    </div>
-
+    }
      <mat-divider></mat-divider>
 
     <div align="end" class="buttons-group">
         <button mat-button class="cancel-btn" (click)="onClose()">Cancel</button>
-        <button mat-stroked-button class="draft-btn" [hidden]="!uploadedFile ? true : false">
+        <button mat-stroked-button 
+        class="draft-btn" 
+        [hidden]="!uploadedVideo ? true : false"
+        [disabled]="(progressValue < 62.5 || timeControl.invalid)"
+        matTooltip="Time and some other values must be filled to save draft"
+        matTooltipPosition="above"
+        >
             Save as Draft
         </button>
-        <button mat-fab class="save-btn" [hidden]="!uploadedFile ? true : false" (click)="onSubmit()">
+        <button mat-fab class="save-btn" 
+        [hidden]="!uploadedVideo ? true : false" 
+        (click)="onSubmit()"
+        [disabled]="progressValue < 99"
+        matTooltip="all values must be filled, track using progress bar."
+        matTooltipPosition="above"
+        >
             Save Post
         </button>
     </div>

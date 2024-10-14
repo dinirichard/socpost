@@ -175,3 +175,11 @@ html {
 @import './app/styles/bulma_edits.scss';
 @import './app/styles/bootstrap_edits.scss';
 
+.cdk-overlay-pane{
+    z-index: 99990000 !important;
+}
+
+.cdk-overlay-container {
+    position: fixed;
+    z-index: 999999;
+}

@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, OnDestroy, output, signal, TemplateRef } from "@angular/core";
+import { Component, effect, inject, input, output, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
 import { DragDropDirectiveModule } from "../drag-drop.directive";
@@ -6,6 +6,7 @@ import { MatProgressBarModule, ProgressBarMode } from "@angular/material/progres
 import { FileUploadService } from "../file-upload.service";
 import { Observable } from "rxjs";
 import { UploadService } from "../../../services/upload.service";
+import { SnackbarService } from "../../../shared/snackbar/snackbar.service";
 
 @Component({
     selector: "app-file-upload",
@@ -19,8 +20,9 @@ import { UploadService } from "../../../services/upload.service";
     styleUrl: "./file-upload.component.scss",
 })
 export class FileUploadComponent {
+    snackbarService = inject(SnackbarService);
 
-    uploadFile = output<File>();
+    uploadFile = output<any>();
     uploadError = output<string>();
     progress = signal(100);
     aspectRatio = input('16:9');
@@ -28,12 +30,10 @@ export class FileUploadComponent {
         console.log(this.aspectRatio());
     });
     uploadComplete = false;
+    uploadStart = signal(true);
 
-    selectedFiles?: FileList;
     currentFile?: File;
     progressMode: ProgressBarMode = 'query';
-    message = '';
-    fileInfos?: Observable<any>;
 
     constructor(
         private upService: UploadService
@@ -45,8 +45,23 @@ export class FileUploadComponent {
      * on file drop handler
      */
     onFileDropped($event: FileList) {
-        console.log($event.item);
-        // this.prepareFilesList($event);
+        const fileArray = Array.from($event);
+        for (const item of fileArray) {
+            if (item.type === 'video/mp4') {
+                this.getVideoDimensions(item).then(dimensions => {
+                    const aspectRatio = this.getAspectRatio(dimensions.width, dimensions.height);
+                    if (aspectRatio === this.aspectRatio()) {
+                        this.prepareFilesList(item);
+                    } else {
+                        console.log('aspectRatio:', aspectRatio);
+                        this.snackbarService.openSnackbar('error', `The video must have ${this.aspectRatio()} aspect ratio.`);
+                    }
+                });
+            } else {
+                console.log('YouTube accepts only mp4 video formats', item.type);
+                this.snackbarService.openSnackbar('error', 'YouTube accepts only mp4 video formats');
+            }
+        }
     }
 
     /**
@@ -59,25 +74,20 @@ export class FileUploadComponent {
             for (const item of fileArray) {
                 if (item.type === 'video/mp4') {
                     this.getVideoDimensions(item).then(dimensions => {
-                        console.log('Width:', dimensions.width);
-                        console.log('Height:', dimensions.height);
                         const aspectRatio = this.getAspectRatio(dimensions.width, dimensions.height);
-                        console.log('aspectRatio:', aspectRatio);
                         if (aspectRatio === this.aspectRatio()) {
                             this.prepareFilesList(item);
                         } else {
                             console.log('aspectRatio:', aspectRatio);
-                            // this.toaster(`The video must have ${this.aspectRatio()} aspect ratio.`, 'is-danger');
+                            this.snackbarService.openSnackbar('error', `The video must have ${this.aspectRatio()} aspect ratio.`);
                         }
                     });
                 } else {
                     console.log('YouTube accepts only mp4 video formats', item.type);
-                    // this.toaster('YouTube accepts only mp4 video formats', 'is-danger');
+                    this.snackbarService.openSnackbar('error', 'YouTube accepts only mp4 video formats');
                 }
             }
-            // this.prepareFilesList(input.files);
         }
-
     }
 
     /**
@@ -93,56 +103,63 @@ export class FileUploadComponent {
      * @param files (Files List)
      */
     prepareFilesList(item: File) {
+        this.uploadStart.set(true);
         this.files.push(item);
         this.currentFile = item;
         console.log(this.currentFile, 'This is the file');
         if ((item.size / (1 * 1024 * 1024)) < 10 ) {
-            this.uploadFile.emit(this.currentFile);
-            this.upService.upload(item)
+            this.upService.simpleImageUploadS3(item)
             .subscribe(
                 (event: any) => {
                     console.log( event, 'event');
+                    this.uploadFile.emit(event);
                     this.progressMode = 'determinate';
                     this.uploadComplete = true;
-                    // this.toaster('The file has been uploaded!', 'is-success');
+                    this.snackbarService.openSnackbar('success', 'The video has been uploaded! 😥🙌');
                 },
                 (err: any) => {
                     console.log(err);
-                    // this.toaster('Could not upload the file!', 'is-danger');
+                    this.snackbarService.openSnackbar('error', 'There was an error uploading video');
                     this.progressMode = 'determinate';
                     this.progress.set(0);
+                    this.uploadStart.set(false);
                     this.currentFile = undefined;
                     
                     if (err.error && err.error.message) {
-                    //   this.toaster(err.error.message, 'is-success');
+                        this.snackbarService.openSnackbar('error', err.error.message);
                     }
                 
                 }
             );
         } else {
-            this.uploadFile.emit(this.currentFile);
-            // this.upService.largeMediaUpload(item)
-            // .then(
-            //     (event: any) => {
-            //         console.log( event, 'event');
-            //         this.progressMode = 'determinate';
-            //         this.uploadComplete = true;
-            //         this.toaster('The file has been uploaded!', 'is-success');
-            //     },
-            //     (err: any) => {
-            //         console.log(err);
-            //         this.toaster('Could not upload the file!', 'is-danger');
-            //         this.progressMode = 'determinate';
-            //         this.progress.set(0);
-            //         this.currentFile = undefined;
-                  
-            //         if (err.error && err.error.message) {
-            //           this.toaster(err.error.message, 'is-success');
-            //         }
-            //     }
-            // );
+            this.upService.largeMediaUploadS3(item).then((res) => {
+                if (res !== undefined) {
+                    this.upService.saveMediaData(res.orgId, res.originalName, res.uploadUrl, res.fileType)
+                        .subscribe((res) => {
+                            console.log( res, 'event');
+                            this.uploadFile.emit(res);
+                            this.progressMode = 'determinate';
+                            this.uploadComplete = true;
+                            this.snackbarService.openSnackbar('success', 'The video has been uploaded! 😥🙌');
+                        },
+                        (err: any) => {
+                            console.log(err);
+                            this.snackbarService.openSnackbar('error', 'There was an error uploading video');
+                            this.progressMode = 'determinate';
+                            this.progress.set(0);
+                            this.uploadStart.set(false);
+                            this.currentFile = undefined;
+                          
+                            if (err.error && err.error.message) {
+                                this.snackbarService.openSnackbar('error', err.error.message);
+                            }
+                        }
+                    );
+                } else {
+                    this.snackbarService.openSnackbar('error', 'There was an error uploading video');
+                }
+            });
         }
-    //   this.uploadFilesSimulator(0);
     }
 
     /**
@@ -176,7 +193,7 @@ export class FileUploadComponent {
             video.onerror = () => {
               reject(null); // Or reject with an error object
             };
-      
+    
             video.src = URL.createObjectURL(videoFile); 
           });
     }
@@ -192,16 +209,4 @@ export class FileUploadComponent {
     
         return `${aspectWidth}:${aspectHeight}`;
     }
-
-    // toaster(message: string, type: any) {
-    //     toast({
-    //         message: message,
-    //         type: type,
-    //         dismissible: true,
-    //         animate: { in: 'fadeIn', out: 'fadeOut' },
-    //         position: 'top-right',
-    //         duration: 15,
-    //         pauseOnHover: true,
-    //       });
-    // }
 }
