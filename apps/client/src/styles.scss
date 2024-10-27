@@ -28,10 +28,14 @@ $custom-theme: mat.define-theme(
             // regular-weight:
             // system-variables-prefix:
         )
-        ,
+    )
+);
+
+$compact-theme: mat.define-theme(
+    (
         density: (
-            scale: 0,
-        ),
+            scale: -3,
+        )
     )
 );
 
@@ -39,6 +43,7 @@ $custom-theme: mat.define-theme(
 :root {
     @include mat.all-component-themes($custom-theme);
     @include mat.system-level-colors($custom-theme); // 👈 Added
+    @include mat.list-density($compact-theme);
 //     @include mat.system-level-typography($angular-material-theming-css-vars-theme); // 👈 Added
 }
 
@@ -92,6 +97,8 @@ html {
     --sys-surface-container: rgb(236 238 243);
     --sys-surface-container-high: rgb(230 232 238);
     --sys-surface-container-highest: rgb(224 226 232);
+
+    --mat-list-active-indicator-shape: 10px;
 }
 
 .dark {
@@ -144,6 +151,8 @@ html {
     --sys-surface-container: rgb(28 32 36);
     --sys-surface-container-high: rgb(39 42 47);
     --sys-surface-container-highest: rgb(50 53 57);
+
+    --mat-list-active-indicator-shape: 10px;
 }
 @import '../../../node_modules/@angular/material/prebuilt-themes/cyan-orange.css'; 
 
@@ -183,3 +192,21 @@ html {
     position: fixed;
     z-index: 999999;
 }
+
+.calendar_green_corner {
+    visibility: hidden !important;
+}
+
+.calendar_green_corner_inner {
+    z-index: 1;
+}
+
+.calendar_green_header {
+    z-index: 1;
+    background-color: var(--sys-background);
+}
+
+.mat-drawer-inner-container {
+    background: var(--sys-surface-container-high);
+}
+

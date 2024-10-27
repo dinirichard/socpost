@@ -17,14 +17,16 @@ export interface DialogConnectionData {
     styleUrl: './select-connection-dialog.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SelectConnectionDialogComponent implements OnInit {
+export class SelectConnectionDialogComponent 
+// implements OnInit 
+{
     readonly dialogRef = inject(MatDialogRef<SelectConnectionDialogComponent>);
     readonly data = inject<DialogConnectionData>(MAT_DIALOG_DATA);
     readonly store = inject(ProvidersStore);
 
-    ngOnInit(): void {
-        this.store.readFromStorage();
-    }
+    // ngOnInit(): void {
+    //     this.store.readFromStorage();
+    // }
 
     onSelectSocial(provider: Provider): void {
         this.data.selectedProvider = provider;

@@ -5,6 +5,9 @@ import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor, responseTimeInterceptor } from './shared/auth.interceptor';
+import { MAT_AUTOCOMPLETE_DEFAULT_OPTIONS } from '@angular/material/autocomplete';
+import { MAT_FORM_FIELD, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { MAT_LIST_CONFIG } from '@angular/material/list';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,5 +21,9 @@ export const appConfig: ApplicationConfig = {
         responseTimeInterceptor,
       ])
     ),
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: { appearance: 'outline', subscriptSizing: 'dynamic' } 
+    },
 ],
 };

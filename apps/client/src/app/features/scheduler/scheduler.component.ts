@@ -1,16 +1,16 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, model, OnInit, output, Signal, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, output, signal, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import {DayPilot, DayPilotModule, DayPilotCalendarComponent, DayPilotMonthComponent } from "daypilot-pro-angular";
+import {DayPilot, DayPilotModule, DayPilotCalendarComponent, DayPilotMonthComponent, DayPilotNavigatorComponent } from "daypilot-pro-angular";
 import MonthTimeRangeSelectedArgs = DayPilot.MonthTimeRangeSelectedArgs;
+import MonthEventClickedArgs = DayPilot.MonthEventClickedArgs;
+import EventData = DayPilot.EventData;
 import { SchedulerService} from "../../services/scheduler.service";
 import {
-  MAT_DIALOG_DATA,
   MatDialog,
-  MatDialogRef,
   MatDialogModule
 } from '@angular/material/dialog';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { YoutubePostComponent } from './posts/youtube.post.component';
@@ -19,6 +19,8 @@ import { SelectConnectionDialogComponent } from '../../components/select-connect
 import { ProvidersStore } from '../../core/signal-states/providers.state';
 import { Provider } from '../../models/provider.dto';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {OverlayModule} from '@angular/cdk/overlay';
 
 
 
@@ -33,7 +35,8 @@ export interface DialogCalPostData {
     DayPilotModule, MatIconModule,
     MatButtonModule, MatFormFieldModule, 
     MatInputModule, FormsModule, 
-    MatDialogModule
+    MatDialogModule, MatButtonToggleModule,
+    OverlayModule, ReactiveFormsModule
   ],
   providers: [SchedulerService, ProvidersStore ],
   templateUrl: './scheduler.component.html',
@@ -41,14 +44,17 @@ export interface DialogCalPostData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SchedulerComponent 
-  implements AfterViewInit 
+  implements 
+  AfterViewInit 
+  //, OnInit
   {
-  readonly providerStore = inject(ProvidersStore);
+  readonly store;
   snackbarService = inject(SnackbarService);
   collasped = signal(false);
   computedCollasped = computed(() => this.collasped() ? '70px' : '250px');
   sideNavWidthOutput = output<string>();
   modalService = inject(NgbModal);
+  navigationOpen = signal(false);
   
   // ngOnInit(): void {   
   // }
@@ -59,29 +65,32 @@ export class SchedulerComponent
     this.sideNavWidthOutput.emit(this.computedCollasped())
   });
 
-
-  @ViewChild("calendar")
-  calendar!: DayPilotCalendarComponent;
   
-  @ViewChild("monthCal")
-  monthCalender!: DayPilotMonthComponent;
+  @ViewChild("day") day!: DayPilotCalendarComponent;
+  @ViewChild("week") week!: DayPilotCalendarComponent;
+  @ViewChild("navigator") nav!: DayPilotNavigatorComponent;
+  @ViewChild("monthCal") monthCalender!: DayPilotMonthComponent;
+  calendarStyleToggle = new FormControl('Month');
+  navDetail = signal('Navigation');
 
-  events: any[] = [];
+  events = signal<EventData[]>([]);
+  date = DayPilot.Date.today();
 
   monthConfig: DayPilot.MonthConfig ={
     locale: "en-us",
-    viewType: "Weeks",
-    weeks: 4,
+    viewType: "Month",
+    // weeks: 4,
     cellHeight: 70,
     eventHeight: 50,
     showWeekend: true,
     timeRangeSelectedHandling: "Enabled",
     theme: 'calendar_green',
+    
     onTimeRangeSelected: async (args: MonthTimeRangeSelectedArgs) => {
       // const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
       // const selectedSocial = await this.openSocialDialog(args);
       this.openSocialDialog(args);
-      this.providerStore.addCalendarArgs(args.start.toDate());
+      this.store.addCalendarArgs(args.start.toDate());
       // await this.openYoutubeDialog(args);
       const calendar = args.control;
 
@@ -107,11 +116,15 @@ export class SchedulerComponent
       console.log("Event moved: " + args.e.text());
     },
     eventResizeHandling: "Disabled",
-    eventClickHandling: "Select",
-    onEventSelected: (args) => {
-      console.log(`Event ${args.e.id().toString()} was ${args.selected}`)
-      args.selected;
+    eventClickHandling: "Enabled",
+    onEventClicked: (args: MonthEventClickedArgs) => {
+      console.log(`Event ${args.e.id().toString()} was clicked: ${args.ctrl}`)
+      this.onEventSelected(args);
     },
+    // onEventSelected: (args: MonthEventSelectedArgs) => {
+    //   console.log(`Event ${args.e.id().toString()} was selected: ${args.selected}`)
+    //   args.selected;
+    // },
     eventHoverHandling: "Bubble",
     bubble: new DayPilot.Bubble({
       onLoad: (args) => {
@@ -125,6 +138,95 @@ export class SchedulerComponent
         { text: "Delete", onClick: (args) => { const dp = args.source.calendar; dp.events.remove(args.source); } }
       ]
     }),
+  };
+
+  configNavigator: DayPilot.NavigatorConfig = {
+    showMonths: 1,
+    // cellWidth: 25,
+    // cellHeight: 25,
+    orientation: "Vertical",
+    rowsPerMonth: "Auto",
+    selectMode: "Month",
+    // onVisibleRangeChanged: args => {
+    //   this.loadEvents();
+    // }
+  };
+
+  // loadEvents(): void {
+  //   const from = this.nav.control.visibleStart();
+  //   const to = this.nav.control.visibleEnd();
+  //   // this.ds.getEvents(from, to).subscribe(result => {
+  //   //   this.events = result;
+  //   // });
+  // };
+
+  changeDate(date: DayPilot.Date): void {
+      this.configDay.startDate = date;
+      this.configWeek.startDate = date;
+      this.monthConfig.startDate = date;
+      if (this.calendarStyleToggle.value === 'Month') {
+        this.navDetail.set(this.monthConfig.startDate.toDate().toLocaleDateString('en-GB', {month: 'long'}));
+      }
+
+      if (this.calendarStyleToggle.value === 'Week') {
+        this.navDetail.set('Navigation');
+      }
+
+      if (this.calendarStyleToggle.value === 'Day') {
+        this.navDetail.set('Navigation');
+      }
+      console.log('Month: ', this.monthConfig.startDate.toDate().toLocaleDateString('en-GB', {month: 'long'}));
+      // this.navigationOpen.set(false);
+  };
+
+  viewDay():void {
+      this.configNavigator.selectMode = "Day";
+      this.configDay.visible = true;
+      this.configWeek.visible = false;
+      this.monthConfig.visible = false;
+  }
+
+  viewWeek():void {
+    this.configNavigator.selectMode = "Week";
+    this.configDay.visible = false;
+    this.configWeek.visible = true;
+    this.monthConfig.visible = false;
+  }
+
+  viewMonth():void {
+    this.configNavigator.selectMode = "Month";
+    this.configDay.visible = false;
+    this.configWeek.visible = false;
+    this.monthConfig.visible = true;
+  }
+
+  configDay: DayPilot.CalendarConfig = {
+    durationBarVisible: true,
+    theme: 'calendar_green',
+    headerDateFormat: "dddd d/M/yy",
+    eventArrangement: "Full",
+    cellDuration: 60,
+    cellHeight: 50,
+    visible: false,
+    // contextMenu: this.contextMenu,
+    // onTimeRangeSelected: this.onTimeRangeSelected.bind(this),
+    // onBeforeEventRender: this.onBeforeEventRender.bind(this),
+    // onEventClick: this.onEventClick.bind(this),
+  };
+
+  configWeek: DayPilot.CalendarConfig = {
+    viewType: "Week",
+    headerDateFormat: "ddd d/M/yy",
+    durationBarVisible: true,
+    theme: 'calendar_green',
+    eventArrangement: "Full",
+    cellDuration: 60,
+    cellHeight: 50,
+    visible: false,
+    // contextMenu: this.contextMenu,
+    // onTimeRangeSelected: this.onTimeRangeSelected.bind(this),
+    // onBeforeEventRender: this.onBeforeEventRender.bind(this),
+    // onEventClick: this.onEventClick.bind(this),
   };
 
   config: DayPilot.CalendarConfig = {
@@ -166,6 +268,7 @@ export class SchedulerComponent
     eventClickHandling: "Select",
     onEventSelected: (args) => {
       console.log(args.selected);
+      // this.onEventSelected(args);
     },
     eventHoverHandling: "Bubble",
     bubble: new DayPilot.Bubble({
@@ -183,59 +286,58 @@ export class SchedulerComponent
         }
       ]
     }),
-    onBeforeEventRender: this.onBeforeEventRender.bind(this),
+    // onBeforeEventRender: this.onBeforeEventRender.bind(this),
   };
 
-  constructor(private ds: SchedulerService ,) {
+  constructor(private scheduleService: SchedulerService , ) {
+    this.store = inject(ProvidersStore);
+    this.store.loadProviders();
+    
+    effect(() => {
+      this.monthCalender.events.concat(this.store.postEvents());
+    })
   }
 
   ngAfterViewInit(): void {
     const from = this.monthCalender.control.visibleStart();
     const to = this.monthCalender.control.visibleEnd();
-    this.ds.getEvents(from, to).subscribe(result => {
-      this.events = result;
+    this.scheduleService.getEvents(from, to).subscribe(result => {
+      this.events.set(this.events().concat(result));
     });
+    this.events.set(this.events().concat(this.store.postEvents()));
+    console.log('Events: ', this.events());
   }
 
-  onBeforeEventRender(args: any) {
-    const dp = args.control;
-    args.data.areas = [
-      {
-        top: 3,
-        right: 3,
-        width: 20,
-        height: 20,
-        symbol: "/public/daypilot.svg#minichevron-down-2",
-        fontColor: "#fff",
-        toolTip: "Show context menu",
-        action: "ContextMenu",
-      },
-      {
-        top: 3,
-        right: 25,
-        width: 20,
-        height: 20,
-        symbol: "/public/daypilot.svg#x-circle",
-        fontColor: "#fff",
-        action: "None",
-        toolTip: "Delete event",
-        onClick: async (args: any)   => {
-          dp.events.remove(args.source);
-        }
-      }
-    ];
+  onEventSelected(arg: MonthEventClickedArgs) {
+      (async () => { 
+          // Do something before delay
+          // const startTime = Date.now();
+          this.scheduleService.getPostForEdits(arg.e.id().toString()).subscribe((result) => {
+              // console.log('Post Event', result);
+              this.store.selectPostEvent(result[0]);
+              // console.log('store.selectPostEvent: ', this.store.selectedPost());
+              this.store.selectProvider(result[1]);
+              // console.log('store.selectProvider: ', this.store.selectedProvider());
+              this.store.clearMedia();
+              this.store.addMedia(result[2]);
+              // console.log('store.addMedia: ', this.store.postMedia());
+              this.store.addCalendarArgs(arg.e.start().toDate());
+              // console.log('store.addCalendarArgs: ', this.store.calenderArgs());
+          });
 
-    args.data.areas.push({
-      bottom: 5,
-      left: 5,
-      width: 36,
-      height: 36,
-      action: "None",
-      image: `https://picsum.photos/36/36?random=${args.data.id}`,
-      style: "border-radius: 50%; border: 2px solid #fff; overflow: hidden;",
-    });
-}
+          //! Add delay spinner
+          await this.delay(500);
 
+          // Do something after
+          // const endTime = Date.now();
+          // const responseTime = endTime - startTime;
+          // console.log(`after delay : ${responseTime}ms later`);
+          this.openYoutubeDialog('xl');
+      })();
+      
+      
+      return;
+  }
 
 
   readonly dialog = inject(MatDialog);
@@ -254,20 +356,18 @@ export class SchedulerComponent
       if (result) {
         this.social.set(result.social);
         console.log(`Dialog result: ${result.selectedProvider}`);
-        this.providerStore.addCalendarArgs(args.start.toDate());
-        this.providerStore.selectProvider(result.selectedProvider);
+        this.store.addCalendarArgs(args.start.toDate());
+        this.store.selectProvider(result.selectedProvider);
 
-        this.openYoutubeDialog(args);
+        this.openYoutubeDialog('l');
       }
     });
   }
 
-  openYoutubeDialog(args: any) {
-
-
+  openYoutubeDialog(size: string) {
     const modalRef = this.modalService.open(YoutubePostComponent, { 
       centered: false,
-      size: 'l',
+      size: size,
       modalDialogClass: 'dark-modal',
       keyboard: false,
       backdrop: 'static',
@@ -278,11 +378,56 @@ export class SchedulerComponent
     });
   }
 
-
-
   snackbar(type:string, message: string) {
     this.snackbarService.openSnackbar(type, message);
   }
+
+  delay(ms: number) {
+      return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+
 }
+
+
+
+
+// onBeforeEventRender(args: any) {
+//   const dp = args.control;
+//   args.data.areas = [
+//     {
+//       top: 3,
+//       right: 3,
+//       width: 20,
+//       height: 20,
+//       symbol: "/public/daypilot.svg#minichevron-down-2",
+//       fontColor: "#fff",
+//       toolTip: "Show context menu",
+//       action: "ContextMenu",
+//     },
+//     {
+//       top: 3,
+//       right: 25,
+//       width: 20,
+//       height: 20,
+//       symbol: "/public/daypilot.svg#x-circle",
+//       fontColor: "#fff",
+//       action: "None",
+//       toolTip: "Delete event",
+//       onClick: async (args: any)   => {
+//         dp.events.remove(args.source);
+//       }
+//     }
+//   ];
+
+//   args.data.areas.push({
+//     bottom: 5,
+//     left: 5,
+//     width: 36,
+//     height: 36,
+//     action: "None",
+//     image: `https://picsum.photos/36/36?random=${args.data.id}`,
+//     style: "border-radius: 50%; border: 2px solid #fff; overflow: hidden;",
+//   });
+// }
 
 

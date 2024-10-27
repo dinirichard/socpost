@@ -62,11 +62,33 @@ export class YoutubePostDTO {
 export class TagDTO {
     @IsString()
     @IsOptional()
-    id: string;
+    id?: string;
 
     @IsString()
     @IsDefined()
-    name: string;
+    name!: string;
+}
+
+export class PostEventDTO {
+    @IsString()
+    @IsDefined()
+    id!: string;
+
+    @IsDate()
+    @IsDefined()
+    publishDate!: Date;
+
+    @IsString()
+    @IsDefined()
+    title!: string;
+
+    @IsString()
+    @IsDefined()
+    profileImage!: string;
+
+    @IsString()
+    @IsDefined()
+    provider!: string;
 }
 
 
@@ -88,11 +110,19 @@ export interface Post {
     video?          : string;
     videoKind?     : string;
     forKids?       : boolean;
-    approval       : string;
+    approval       : APPROVED_SUBMIT_FOR_ORDER;
     tags?           : Tag[];
 }
 
 export interface Tag {
     id: string;
     name: string;
+}
+
+export interface PostEvent {
+    id: string;
+    publishDate: Date;
+    title: string;
+    profileImage: string;
+    provider: string;
 }

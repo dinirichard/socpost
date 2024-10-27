@@ -53,7 +53,7 @@ import { PostsService } from "../../../services/posts.service";
 })
 export class YoutubePostComponent implements OnInit {
     activeModal = inject(NgbActiveModal);
-    readonly store = inject(ProvidersStore);
+    readonly store;
     postService = inject(PostsService)
 
     videoMedia = viewChild<ElementRef<HTMLVideoElement>>('video');
@@ -79,8 +79,8 @@ export class YoutubePostComponent implements OnInit {
     sideNavWidthOutput = output<string>();
 
     timeSpinners = false;
-    calenderArgs = new Date(this.store.calenderArgs()!);
-    timeControl = new FormControl<NgbTimeStruct | null>(null, CustomValidators.TimeValidator);
+    calenderArgs : Date;
+    timeControl : FormControl;
 
     progressValue = 0;
 
@@ -89,60 +89,96 @@ export class YoutubePostComponent implements OnInit {
       {id: 'dfdfdf', name: 'video'},
       {id: 'hjklhuu', name: 'short'},
     ];
-    formPageControl = new FormControl('details');
-    videoKindControl = new FormControl('video');
-    title = new FormControl('', {validators: Validators.required});
-    description = new FormControl('', {validators: Validators.required});
-    forKids = new FormControl(false, {validators: Validators.required});
-    tags = new FormControl([{ id: '', name: 'video'}], {validators: Validators.required});
+    formPageControl : FormControl;
+    videoKindControl : FormControl;
+    title : FormControl;
+    description : FormControl;
+    forKids : FormControl;
+    tags: FormControl;
 
     
-    tagsValidSignal = toSignal(this.tags.valueChanges);
+    tagsValidSignal;
     tagsCheck = false;
-    titleValidSignal = toSignal(this.title.valueChanges);
+    titleValidSignal;
     titleCheck = false;
-    descValidSignal = toSignal(this.description.valueChanges);
+    descValidSignal;
     descCheck = false;
-    timeValidSignal = toSignal(this.timeControl.valueChanges);
+    timeValidSignal
     timeCheck = false;
 
     constructor( ) {
-      this.addProgress();
-      this.addProgress();
+      this.store = inject(ProvidersStore);
+      // this.store.readFromStorage();
+      
+      this.calenderArgs = new Date(this.store.calenderArgs());
+      this.timeControl = new FormControl<NgbTimeStruct | null>(null, CustomValidators.TimeValidator);
+      this.formPageControl = new FormControl('details');
+      this.videoKindControl = new FormControl('video');
+      this.title = new FormControl('', {validators: Validators.required});
+      this.description = new FormControl('', {validators: Validators.required});
+      this.forKids = new FormControl(false, {validators: Validators.required});
+      this.tags = new FormControl([{ id: '', name: 'video'}], {validators: Validators.required});
 
-      effect(() => {
-          this.timeValidSignal();
-          if (this.timeControl.valid && !this.timeCheck) { this.addProgress(); this.timeCheck = !this.timeCheck; } 
-          if (this.timeControl.invalid && this.timeCheck) {this.substractProgress(); this.timeCheck = !this.timeCheck; }
-        }
-      );
-      effect(() => {
-            this.titleValidSignal(); 
-            if (this.title.valid && !this.titleCheck) { this.addProgress(); this.titleCheck = !this.titleCheck; } 
-          if (this.title.invalid && this.titleCheck) {this.substractProgress(); this.titleCheck = !this.titleCheck; }
-        }
-      );
-      effect(() => {
-          this.descValidSignal(); 
-          if (this.description.valid && !this.descCheck) { this.addProgress(); this.descCheck = !this.descCheck; } 
-          if (this.description.invalid && this.descCheck) {this.substractProgress(); this.descCheck = !this.descCheck; }
-        }
-      );
-      effect(() => {
-            this.tagsValidSignal();
-            if (this.tags.valid && !this.tagsCheck) { this.addProgress(); this.tagsCheck = !this.tagsCheck; } 
-          if (this.tags.invalid && this.tagsCheck) {this.substractProgress(); this.tagsCheck = !this.tagsCheck; }
-        }
-      );
+      this.tagsValidSignal = toSignal(this.tags.valueChanges);
+        this.tagsCheck = false;
+        this.titleValidSignal = toSignal(this.title.valueChanges);
+        this.titleCheck = false;
+        this.descValidSignal = toSignal(this.description.valueChanges);
+        this.descCheck = false;
+        this.timeValidSignal = toSignal(this.timeControl.valueChanges);
+        this.timeCheck = false;
+
+        
+        effect(() => {
+            this.timeValidSignal();
+            if (this.timeControl.valid && !this.timeCheck) { this.addProgress(); this.timeCheck = !this.timeCheck; } 
+            if (this.timeControl.invalid && this.timeCheck) {this.substractProgress(); this.timeCheck = !this.timeCheck; }
+          }
+        );
+        effect(() => {
+              this.titleValidSignal(); 
+              if (this.title.valid && !this.titleCheck) { this.addProgress(); this.titleCheck = !this.titleCheck; } 
+            if (this.title.invalid && this.titleCheck) {this.substractProgress(); this.titleCheck = !this.titleCheck; }
+          }
+        );
+        effect(() => {
+            this.descValidSignal(); 
+            if (this.description.valid && !this.descCheck) { this.addProgress(); this.descCheck = !this.descCheck; } 
+            if (this.description.invalid && this.descCheck) {this.substractProgress(); this.descCheck = !this.descCheck; }
+          }
+        );
+        effect(() => {
+              this.tagsValidSignal();
+              if (this.tags.valid && !this.tagsCheck) { this.addProgress(); this.tagsCheck = !this.tagsCheck; } 
+            if (this.tags.invalid && this.tagsCheck) {this.substractProgress(); this.tagsCheck = !this.tagsCheck; }
+          }
+        );
+
+
+      const postProvider = this.store.selectedPost();
+      if(postProvider !== undefined) {
+          this.timeControl.setValue({ hour: this.calenderArgs.getHours(), minute: this.calenderArgs.getMinutes(), second: 0 });
+          this.videoKindControl.setValue(postProvider.videoKind);
+          this.title.setValue(postProvider.title);
+          this.description.setValue(postProvider.description);
+          this.forKids.setValue(postProvider.forKids);
+          this.tags.setValue(postProvider.tags);
+
+          this.getUploadedVideo(this.store.postMedia().find((media) => postProvider.video === media.id));
+          this.getUploadedThumbnail(this.store.postMedia().find((media) => postProvider.image === media.id));
+          this.activeModal.update({ 
+            size: 'xl',
+          });
+          this.addProgress();
+          this.addProgress();
+      }
     }
 
     addProgress() {
       this.progressValue = this.progressValue + 12.5;
-      console.log('Progress Form', this.progressValue);
     }
     substractProgress() {
       this.progressValue = this.progressValue - 12.5;
-      console.log('Progress Form', this.progressValue);
     }
     
     sds = effect( () => {
@@ -164,9 +200,16 @@ export class YoutubePostComponent implements OnInit {
         //     name
         //   };
         // });
+
+        
+
+      
     }
 
     getUploadedVideo(file: any) {
+      if (!file) {
+        return;
+      }
       this.uploadedVideo = file;
       this.progressValue = this.progressValue + 12.5;
       this.title.setValue(file.name);
@@ -177,6 +220,9 @@ export class YoutubePostComponent implements OnInit {
     }
 
     getUploadedThumbnail(file: any) {
+      if (!file) {
+        return;
+      }
       this.uploadedImage = file;
       this.uploadedImage.path = this.uploadedImage.path.replace(/\\/g, "\\",);
       this.progressValue = this.progressValue + 12.5;
@@ -278,9 +324,12 @@ export class YoutubePostComponent implements OnInit {
       }
 
       onClose() {
-          this.activeModal.close();
-          this.store.clearCalendarArgs();
-          this.store.clearSelectedProvider();
+        this.store.clearMedia();
+        this.store.clearCalendarArgs();
+        this.store.clearSelectedProvider();
+        this.store.clearSelectedPostEvent();
+        // this.store.writeToStorage();
+        this.activeModal.close();
       }
       
     

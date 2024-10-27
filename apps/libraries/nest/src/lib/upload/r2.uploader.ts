@@ -35,26 +35,25 @@ const R2upload = new S3Client({
   },
 });
 
-export default async function handleR2Upload(
-  endpoint: string,
-  body: any
-) {
-  switch (endpoint) {
-    case 'create-multipart-upload':
-      return createMultipartUpload(body);
-    // case 'prepare-upload-parts':
-    //   return prepareUploadParts(req, res);
-    case 'complete-multipart-upload':
-      return completeMultipartUpload(body);
-    case 'list-parts':
-      return listParts(body);
-    case 'abort-multipart-upload':
-      return abortMultipartUpload(body);
-    case 'sign-part':
-      return signPart(body);
-  }
-  return;
-}
+// export default async function handleR2Upload(
+//   endpoint: string,
+//   body: any
+// ) {
+//   switch (endpoint) {
+//     case 'create-multipart-upload':
+//       return createMultipartUpload(body);
+//     // case 'prepare-upload-parts':
+//     //   return prepareUploadParts(req, res);
+//     case 'complete-multipart-upload':
+//       return completeMultipartUpload(body);
+//     case 'list-parts':
+//       return listParts(body);
+//     case 'abort-multipart-upload':
+//       return abortMultipartUpload(body);
+//     case 'sign-part':
+//       return signPart(body);
+//   }
+// }
 
 export async function simpleUpload(
   data: Blob,

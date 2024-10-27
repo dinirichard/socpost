@@ -24,8 +24,9 @@ mat-sidenav-container {
 }
 
 .providerImg {
-    anchor-name: --i-profileImg;
-    object-fit: fit;
+    // anchor-name: --i-profileImg;
+    // object-fit: fit;
+    position: absolute;
 
     // background-color: aliceblue;
 }
@@ -33,20 +34,34 @@ mat-sidenav-container {
 .provider-image {
     // anchor-default: --i-profileImg;
     position: absolute;
-    bottom: anchor(bottom);
-    left: anchor(right);
     
     
     &.mat-mdc-list-item-icon.provider-image.mdc-list-item__start {
-        margin: 0px 0px 0px 0px;
-        margin-inline-start: 0px;
-        margin-inline-end: 0px;
-        margin-left: 30px;
-        margin-top: 34px;
-        height: 35px;
-        width:  35px;
+        // margin: 0px 0px 0px 0px;
+        // margin-inline-start: 0px;
+        // margin-inline-end: 0px;
+        // margin-left: 30px;
+        // margin-top: 34px;
+        // height: 35px;
+        // width:  35px;
+        width: 28px;
+        height: 28px;
+        position: absolute;
+        margin-left: 20px;
+        margin-top: 20px;
     }
 }
+
+// .profile-img {
+//     position: absolute;
+// }
+// .provider-img {
+//     width: 28px;
+//     height: 28px;
+//     position: absolute;
+//     margin-left: 20px;
+//     margin-top: 20px;
+// }
 
 img.mat-mdc-list-item-icon.providerImg.mdc-list-item__start {
     margin: 0px 16px 0px 0px;
@@ -79,4 +94,21 @@ mat-icon.mat-icon.notranslate.material-icons.mat-ligature-font.mat-icon-no-color
     opacity: 0;
     height: 0px;
     width: 0px;
+}
+
+.mdc-list-item--with-leading-radio.mdc-list-item--with-two-lines .mdc-list-item__primary-text::before, .mdc-list-item--with-leading-checkbox.mdc-list-item--with-two-lines .mdc-list-item__primary-text::before, .mdc-list-item--with-leading-icon.mdc-list-item--with-two-lines .mdc-list-item__primary-text::before, .mdc-list-item--with-leading-avatar.mdc-list-item--with-two-lines .mdc-list-item__primary-text::before {
+    display: inline-block;
+    width: 0;
+    height: 20px;
+    content: "";
+    vertical-align: 0;
+}
+
+.mdc-list-item--with-leading-icon .mdc-list-item__start {
+    // color: var(--mdc-list-list-item-leading-icon-color, var(--mat-app-on-surface-variant));
+    // width: var(--mdc-list-list-item-leading-icon-size);
+    width: min-content;
+    height: min-content;
+    // margin-left: 16px;
+    // margin-right: 32px;
 }

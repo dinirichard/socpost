@@ -3,14 +3,12 @@ import { finalize } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const accessToken = localStorage.getItem("accessToken");
-  console.log( accessToken, 'accessToken');
 
         if (accessToken && req.urlWithParams.includes('http://localhost:3000/api')) {
             const authReq = req.clone({
                 headers: req.headers.set("Authorization",
                     "Bearer " + accessToken)
             });
-            console.log( authReq, 'authReq');
             return next(authReq);
         }
         else {

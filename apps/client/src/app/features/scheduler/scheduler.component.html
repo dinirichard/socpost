@@ -1,6 +1,49 @@
-<button mat-icon-button (click)="collasped.set(!collasped())" class="example-icon" aria-label="Example icon-button with menu icon">
-    <mat-icon>menu</mat-icon>
-</button>
 
-<!-- <daypilot-calendar [config]="config" [events]="events" #calendar></daypilot-calendar> -->
-<daypilot-month [config]="monthConfig" [events]="events" #monthCal></daypilot-month>
+
+
+<div class="content">
+    
+    <div class="shedule-controls pb-2">
+        <button mat-icon-button (click)="collasped.set(!collasped())" aria-label="Example icon-button with menu icon">
+            <mat-icon>menu</mat-icon>
+        </button>
+
+        <button mat-stroked-button class="schedule-navigator" 
+            (mouseenter)="navigationOpen.set(!navigationOpen())" 
+            (mouseleave)="navigationOpen.set(!navigationOpen())"
+            cdkOverlayOrigin #navTrigger="cdkOverlayOrigin" 
+        >
+            {{navDetail()}}
+        </button>
+        <ng-template
+          cdkConnectedOverlay
+          [cdkConnectedOverlayOrigin]="navTrigger"
+          [cdkConnectedOverlayOpen]="navigationOpen()"
+        >
+            <daypilot-navigator 
+                [config]="configNavigator" 
+                [events]="events()" [(date)]="date" 
+                (dateChange)="changeDate($event)" 
+                (mouseenter)="navigationOpen.set(true)" 
+                (mouseleave)="navigationOpen.set(false)"
+                #navigator>
+            </daypilot-navigator>
+        </ng-template>
+
+        <mat-button-toggle-group aria-label="Font Style" [formControl]="calendarStyleToggle" hideSingleSelectionIndicator="true">
+            <mat-button-toggle value="Day" (click)="viewDay()">Day</mat-button-toggle>
+            <mat-button-toggle value="Week" (click)="viewWeek()">Week</mat-button-toggle>
+            <mat-button-toggle value="Month" (click)="viewMonth()">Month</mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    
+    <!-- <div class="buttons">
+    <button (click)="viewDay()" [class]="this.configNavigator.selectMode === 'Day' ? 'selected' : ''">Day</button>
+    <button (click)="viewWeek()" [class]="this.configNavigator.selectMode === 'Week' ? 'selected' : ''">Week</button>
+    <button (click)="viewMonth()" [class]="this.configNavigator.selectMode === 'Month' ? 'selected' : ''">Month</button>
+    </div> -->
+
+    <daypilot-calendar [config]="configDay" [events]="events()" #day></daypilot-calendar>
+    <daypilot-calendar [config]="configWeek" [events]="events()" #week></daypilot-calendar>
+    <daypilot-month [config]="monthConfig" [events]="events()" #monthCal></daypilot-month>
+</div>

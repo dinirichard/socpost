@@ -30,9 +30,13 @@
                 @for( provider of providerStore.providers(); track provider.id) {
                     <!--! Convert to Mat-List -->
                     <a mat-list-item href="/scheduler">
-                        <img matListItemIcon [src]=" provider.picture" class="providerImg" alt='{{provider.name}}' />
+                        <figure matListItemIcon class="image is-48x48">
+                            <img class="is-rounded profile-img" [src]="provider.picture" alt='{{provider.name}}'/>
+                            <img class="provider-img" [src]="provider.providerIdentifier + '.png'" [alt]='provider.providerIdentifier' />
+                        </figure>
+                        <!-- <img matListItemIcon [src]=" provider.picture" class="providerImg" alt='{{provider.name}}' />
                         <img matListItemIcon class="provider-image"
-                            [src]="provider.providerIdentifier + '.png'" [alt]='provider.providerIdentifier' />
+                            [src]="provider.providerIdentifier + '.png'" [alt]='provider.providerIdentifier' /> -->
                         
                         <div matListItemTitle *ngIf="sideNavCollapsed" class="providerName" >{{provider.name}}</div>
                         <div matListItemLine *ngIf="sideNavCollapsed" >{{provider.providerIdentifier}}</div>

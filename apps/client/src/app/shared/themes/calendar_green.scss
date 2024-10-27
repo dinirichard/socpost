@@ -8,8 +8,8 @@
     --color-event-bar: #367c5a;
     --color-event-border: #41946d;
 
-    --color-cell-background-business: #ffffff;
-    --color-cell-background-nonbusiness: #f9f9f9;
+    --color-cell-background-business: var(--sys-background);
+    --color-cell-background-nonbusiness: var(--sys-surface-container-high);
 }
 
 .calendar_green_main {
@@ -246,4 +246,14 @@
     background-color: orange;
     color: white;
     padding: 2px;
+}
+
+.calendar_green_header {
+    border: 1px solid var(--sys-on-background);
+}
+
+
+.calendar_green_header_inner {
+    margin: auto;
+    width: 50%;
 }

@@ -40,7 +40,6 @@ export class TagsInputComponent  implements OnInit {
 
     onFocus(){
       this.isFocused = !this.isFocused;
-      console.log(this.isFocused);
     }
   
     readonly tagsSignal = signal([{ id: '', name: '' }]);
@@ -60,28 +59,28 @@ export class TagsInputComponent  implements OnInit {
       effect(() => {
         if (this.tagsSignal()) {
           this.tagsChanged.emit(this.tagsSignal());
-          console.log('tagsSignal', this.tagsSignal());
+          // console.log('tagsSignal', this.tagsSignal());
         }
       });
       effect(() => {
         if (this.tagsSignal()) {
-            console.log('filteredTags', this.filteredTags());
+            // console.log('filteredTags', this.filteredTags());
         }
       });
     }
   
     ngOnInit() {
       this.tagsSignal.set(this.tags);
-      console.log(this.tagsAvailable);
+      // console.log(this.tagsAvailable);
       this.currentTag.subscribe(value => {
-        console.log(value);
+        // console.log(value);
       });
       
     }
   
     public onAddTag(event: MatAutocompleteSelectedEvent) {
       const tagId = event.option.value;
-      console.log('MatAutocompleteSelectedEvent', tagId);
+      // console.log('MatAutocompleteSelectedEvent', tagId);
       const newTag = this.tagsAvailable.find(({ id }) => id === tagId);
   
       if (this.tagsSignal()?.some((el) => el.id === tagId)) {
