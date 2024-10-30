@@ -40,9 +40,15 @@ export class AddSocialRedirectComponent implements OnInit {
         // Data:  { title: 'Company' } 
         this.route.queryParamMap.subscribe(queryParamMap => {
             console.log(queryParamMap, 'queryParamMap');
+            // For YouTube
             if (queryParamMap.has('state') && queryParamMap.has('code')) {
                 this.code = queryParamMap.get('code');
                 this.state = queryParamMap.get('state');
+            }
+            // For X
+            if (queryParamMap.has('oauth_token') && queryParamMap.has('oauth_verifier')) {
+                this.code = queryParamMap.get('oauth_verifier');
+                this.state = queryParamMap.get('oauth_token');
             }
         });
         

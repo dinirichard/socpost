@@ -5,12 +5,14 @@ import { IntegrationManager } from '@socpost/libraries/nest/lib/integrations/int
 import { NotEnoughScopesFilter } from '@socpost/libraries/nest/lib/integrations/integration.missing.scopes';
 import { ConnectIntegrationDto } from '@socpost/libraries/nest/lib/dtos/integrations/connect.integration.dto';
 import { ioRedis } from '@socpost/libraries/nest/lib/redis/redis.service';
+import { PostService } from '../posts/post.service';
 
 @Controller('integrations')
 export class IntegrationsController {
   constructor(
     private integrationManager: IntegrationManager,
-    private readonly integrationsService: IntegrationsService
+    private readonly integrationsService: IntegrationsService,
+    private readonly postService: PostService,
   ) {}
 
   @Post()
@@ -51,8 +53,10 @@ export class IntegrationsController {
 
     const integrationProvider =
       this.integrationManager.getSocialIntegration(integration);
+      Logger.log(integrationProvider.name, 'integration Provider:');
     const authDetails =
       await integrationProvider.generateAuthUrl(refresh);
+    Logger.log(integrationProvider.name, 'integration Provider:');
     await ioRedis.set(`login:${authDetails.state}`, authDetails.codeVerifier, 'EX', 300);
     Logger.log(authDetails.url, 'authDetails url');
     Logger.log(authDetails.codeVerifier, 'authDetails codeVerifier');
@@ -130,14 +134,41 @@ export class IntegrationsController {
 
   @Post('/disable')
   disableChannel(
-    @Param('org') orgId: string,
-    // @GetOrgFromRequest() org: Organization,
-    @Body('id') id: string
+    @Body() body: { orgId: string; id: string;},
   ) {
-    return this.integrationsService.disableChannel(orgId, id);
+    Logger.log(body.orgId, 'Org Id');
+    Logger.log(body.id, 'Provider id');
+    return this.integrationsService.disableChannel(body.orgId, body.id);
   }
 
-  // @Post('/instagram/:id')
+  @Post('/enable')
+  enableChannel(
+    @Body() body: { orgId: string; id: string;},
+  ) {
+    return this.integrationsService.enableChannel(
+      body.orgId,
+      body.id
+    );
+  }
+
+  @Delete('/')
+  async deleteChannel(
+    @Body() body: { orgId: string; id: string;},
+  ) {
+      const isTherePosts = await this.integrationsService.getPostsForChannel(
+        body.orgId,
+        body.id
+      );
+      if (isTherePosts.length) {
+        for (const post of isTherePosts) {
+          await this.postService.deletePost(body.orgId, post.id);
+        }
+      }
+
+      return this.integrationsService.deleteChannel(body.orgId, body.id);
+  }
+
+    // @Post('/instagram/:id')
   // async saveInstagram(
   //   @Param('id') id: string,
   //   @Body() body: { pageId: string; id: string },
@@ -162,37 +193,5 @@ export class IntegrationsController {
   //   @GetOrgFromRequest() org: Organization
   // ) {
   //   return this._integrationService.saveLinkedin(org.id, id, body.page);
-  // }
-
-  // @Post('/enable')
-  // enableChannel(
-  //   // @GetOrgFromRequest() org: Organization,
-  //   @Param('org') orgId: string,
-  //   @Body('id') id: string
-  // ) {
-  //   return this._integrationService.enableChannel(
-  //     orgId,
-  //     // @ts-ignore
-  //     org?.subscription?.totalChannels || pricing.FREE.channel,
-  //     id
-  //   );
-  // }
-
-  // @Delete('/')
-  // async deleteChannel(
-  //   @GetOrgFromRequest() org: Organization,
-  //   @Body('id') id: string
-  // ) {
-  //   const isTherePosts = await this._integrationService.getPostsForChannel(
-  //     org.id,
-  //     id
-  //   );
-  //   if (isTherePosts.length) {
-  //     for (const post of isTherePosts) {
-  //       await this._postService.deletePost(org.id, post.group);
-  //     }
-  //   }
-
-  //   return this._integrationService.deleteChannel(org.id, id);
   // }
 }

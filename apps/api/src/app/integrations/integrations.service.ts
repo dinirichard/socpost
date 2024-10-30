@@ -248,18 +248,18 @@ export class IntegrationsService {
     });
   }
 
-  async enableChannel(org: string, totalChannels: number, id: string) {
-    const integrations = (
-      await this.databaseService.integration.findMany({
-        where: {
-          organizationId: org,
-          deletedAt: null,
-        },
-      })
-    ).filter((f) => !f.disabled);
-    if (integrations.length >= totalChannels) {
-      throw new Error('You have reached the maximum number of channels');
-    }
+  async enableChannel(org: string, id: string) {
+    // const integrations = (
+    //   await this.databaseService.integration.findMany({
+    //     where: {
+    //       organizationId: org,
+    //       deletedAt: null,
+    //     },
+    //   })
+    // ).filter((f) => !f.disabled);
+    // if (integrations.length >= totalChannels) {
+    //   throw new Error('You have reached the maximum number of channels');
+    // }
 
     return this.databaseService.integration.update({
       where: {
@@ -268,6 +268,37 @@ export class IntegrationsService {
       },
       data: {
         disabled: false,
+      },
+    });
+  }
+
+  async getPostsForChannel(org: string, id: string) {
+    // return await this.databaseService.post.groupBy({
+    //   by: ['group'],
+    //   where: {
+    //     organizationId: org,
+    //     integrationId: id,
+    //     deletedAt: null,
+    //   },
+    // });
+
+    return await this.databaseService.post.findMany({
+      where: {
+        organizationId: org,
+        integrationId: id,
+        deletedAt: null,
+      },
+    });
+  }
+
+  deleteChannel(org: string, id: string) {
+    return this.databaseService.integration.update({
+      where: {
+        id,
+        organizationId: org,
+      },
+      data: {
+        deletedAt: new Date(),
       },
     });
   }

@@ -2,10 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { ArticleProvider } from "./articles/article.integration.interface";
 import { SocialProvider } from "./socials/social.integrations.interface";
 import { YoutubeProvider } from "./socials/youtube.provider";
+import { XProvider } from "./socials/x.provider";
 
 
 const socialIntegrationList: SocialProvider[] = [
     new YoutubeProvider(),
+    new XProvider(),
 ];
 
 const articleIntegrationList: ArticleProvider[]  = [];

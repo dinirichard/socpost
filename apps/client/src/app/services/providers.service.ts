@@ -3,13 +3,14 @@ import { afterRender, Inject, inject, Injectable } from '@angular/core';
 import { Provider } from '../models/provider.dto';
 import { map, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { ProvidersStore } from '../core/signal-states/providers.state';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProvidersService {
     httpClient = inject(HttpClient);
-    // readonly providerStore = inject(ProvidersStore);
+    // readonly store = inject(ProvidersStore);
     // storage = inject(BrowserStorageServerService);
     baseUrl = "http://localhost:3000/api/integrations";
     orgId: string | null = null;
@@ -36,7 +37,7 @@ export class ProvidersService {
       const timezoneOffset = date.getTimezoneOffset();
         console.log(`provider: ${provider}\n
           state: ${state} \n
-          state: ${code} \n
+          code: ${code} \n
           Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone} \n
           orgID: ${this.orgId}\n`, 'Connect body');
 
@@ -65,6 +66,31 @@ export class ProvidersService {
 
 
         return responseData;
+    }
+
+    disableProvider(providerId: string, orgId: string): Observable<Provider>  {
+      console.log('providerId: ', providerId);
+      console.log('orgId: ', orgId);
+        return this.httpClient.post<Provider>(this.baseUrl + '/disable', {
+            id: providerId,
+            orgId,
+        });
+    }
+
+    enableProvider(providerId: string, orgId: string): Observable<Provider>  {
+      return this.httpClient.post<Provider>(this.baseUrl + '/enable',{
+          id: providerId,
+          orgId,
+        });
+    }
+
+    deleteProvider(providerId: string, orgId: string) {
+        return this.httpClient.delete(this.baseUrl+'/', {
+          body: {
+            id: providerId,
+            orgId,
+          }
+        });
     }
 
 }

@@ -175,4 +175,16 @@ export class PostService {
             throw new InternalServerErrorException(error, 'There was an error accessing the database');
         }
     }
+
+    async deletePost(orgId: string, postId: string) {
+        return await this.databaseService.post.update({
+            where: {
+                organizationId: orgId,
+                id: postId,
+            },
+            data: {
+                deletedAt: new Date(),
+            }
+        });
+    }
 }

@@ -167,6 +167,9 @@ importers:
       tslib:
         specifier: ^2.3.0
         version: 2.7.0
+      twitter-api-v2:
+        specifier: ^1.18.1
+        version: 1.18.1
       zone.js:
         specifier: ~0.14.3
         version: 0.14.10
@@ -7558,6 +7561,9 @@ packages:
   tuf-js@2.2.1:
     resolution: {integrity: sha512-GwIJau9XaA8nLVbUXsN3IlFi7WmQ48gBUrl3FTkkL/XLu/POhBzfmX9hd33FNMX1qAsfl6ozO1iMmW9NC8YniA==}
     engines: {node: ^16.14.0 || >=18.0.0}
+
+  twitter-api-v2@1.18.1:
+    resolution: {integrity: sha512-6pChAlfH/7VakKnPfVdG2fjxVJJgKCXvvWhuEOCdJ52Y+rzmAmsnTKDgjhnj11XgboSYQx1bn3j2VWyR+vnRiA==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -17588,6 +17594,8 @@ snapshots:
       make-fetch-happen: 13.0.1
     transitivePeerDependencies:
       - supports-color
+
+  twitter-api-v2@1.18.1: {}
 
   type-check@0.4.0:
     dependencies:

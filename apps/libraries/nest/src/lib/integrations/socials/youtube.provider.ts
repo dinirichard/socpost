@@ -5,6 +5,8 @@ import { makeId } from '../../services/make.is';
 import { url } from 'inspector';
 import { SocialAbstract } from '../social.abstract';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
+import { YoutubeSettingsDto } from '../../dtos/posts/youtube.settings.dto';
+import axios from 'axios';
 // import * as process from 'node:process';
 
 const clientAndYoutube = () => {
@@ -76,7 +78,7 @@ const clientAndYoutube = () => {
     }
 
     
-    generateAuthUrl(refresh?: string): GenerateAuthUrlResponse {
+    async generateAuthUrl(refresh?: string): Promise<GenerateAuthUrlResponse> {
       const state = makeId(7);
       const {client} = clientAndYoutube();
 
@@ -138,9 +140,110 @@ const clientAndYoutube = () => {
       
     }
 
-    //! FIXME: Wrtie the code to post
-    post(id: string, accessToken: string, postDetails: PostDetails[]): Promise<PostResponse[]> {
-      throw new Error('Method not implemented.');
+    //! FIXME: Write the code to post
+    async post(id: string, accessToken: string, postDetails: PostDetails[]): Promise<PostResponse[]> {
+      const [firstPost, ...comments] = postDetails;
+
+      const { client, youtube } = clientAndYoutube();
+      client.setCredentials({ access_token: accessToken });
+      const youtubeClient = youtube(client);
+  
+      const { settings }: { settings: YoutubeSettingsDto } = firstPost;
+  
+      const response = await axios({
+        url: firstPost?.media?.[0]?.url,
+        method: 'GET',
+        responseType: 'stream',
+      });
+  
+      try {
+        const all = await youtubeClient.videos.insert({
+          part: ['id', 'snippet', 'status'],
+          notifySubscribers: true,
+          requestBody: {
+            snippet: {
+              title: settings.title,
+              description: firstPost?.message,
+              ...(settings?.tags?.length
+                ? { tags: settings.tags.map((p) => p.label) }
+                : {}),
+              // ...(settings?.thumbnail?.path
+              //   ? {
+              //       thumbnails: {
+              //         default: {
+              //           url: settings?.thumbnail?.path,
+              //         },
+              //       },
+              //     }
+              //   : {}),
+            },
+            status: {
+              privacyStatus: settings.privacy,
+            },
+          },
+          media: {
+            body: response.data,
+          },
+        });
+  
+        console.log(all);
+  
+        if (settings?.thumbnail?.path) {
+          try {
+            const allb = await youtubeClient.thumbnails.set({
+              videoId: all?.data?.id!,
+              media: {
+                body: (
+                  await axios({
+                    url: settings?.thumbnail?.path,
+                    method: 'GET',
+                    responseType: 'stream',
+                  })
+                ).data,
+              },
+            });
+  
+            console.log(allb);
+          } catch (err: any) {
+            if (
+              err.response?.data?.error?.errors?.[0]?.domain ===
+              'youtube.thumbnail'
+            ) {
+              throw 'Your account is not verified, we have uploaded your video but we could not set the thumbnail. Please verify your account and try again.';
+            }
+  
+            console.log(JSON.stringify(err?.response?.data, null, 2));
+          }
+        }
+  
+        return [
+          {
+            id: firstPost.id,
+            releaseURL: `https://www.youtube.com/watch?v=${all?.data?.id}`,
+            postId: all?.data?.id!,
+            status: 'success',
+          },
+        ];
+      } catch (err: any) {
+        if (
+          err.response?.data?.error?.errors?.[0]?.reason === 'failedPrecondition'
+        ) {
+          throw 'We have uploaded your video but we could not set the thumbnail. Thumbnail size is too large';
+        }
+        if (
+          err.response?.data?.error?.errors?.[0]?.reason === 'uploadLimitExceeded'
+        ) {
+          throw 'You have reached your daily upload limit, please try again tomorrow.';
+        }
+        if (
+          err.response?.data?.error?.errors?.[0]?.reason ===
+          'youtubeSignupRequired'
+        ) {
+          console.log('nevo david!');
+          throw 'You have to link your youtube account to your google account first.';
+        }
+      }
+      return [];
     }
 
     //! FIXME: Wrtie the code to get analytics data

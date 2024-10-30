@@ -95,9 +95,9 @@ export const ProvidersStore = signalStore(
         addProvider(provider: Provider): void {
             patchState(store, (state) => ({ providers: state.providers.concat(provider) }));
         },
-        removeProvider(provider: Provider): void {
+        removeProvider(providerId: string): void {
             patchState(store, (state) => ({ 
-                providers: state.providers.filter(val => val.id !== provider.id) 
+                providers: state.providers.filter(val => val.id !== providerId) 
             }));
         },
         addPostEvent(event: EventData): void {

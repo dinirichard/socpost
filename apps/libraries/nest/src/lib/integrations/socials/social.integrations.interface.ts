@@ -1,5 +1,5 @@
 export interface IAuthenticator {
-    generateAuthUrl(refresh?: string): GenerateAuthUrlResponse;
+    generateAuthUrl(refresh?: string): Promise<GenerateAuthUrlResponse>;
 
     authenticate(params: {
       code: string;
@@ -48,6 +48,8 @@ export interface IAuthenticator {
     postId: string; // The ID of the scheduled post returned by the platform
     releaseURL: string; // The URL of the post on the platform
     status: string; // Status of the operation or initial post status
+    // scheduledTime?: string;
+    // error?: string;
   };
   
   export type PostDetails<T = any> = {
@@ -64,7 +66,7 @@ export interface IAuthenticator {
   };
   
   export type MediaContent = {
-    type: 'image' | 'video'; // Type of the media content
+    mimeType: string; // Type of the media content
     url: string; // URL of the media file, if it's already hosted somewhere
     path: string;
   };

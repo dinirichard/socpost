@@ -28,18 +28,30 @@
                 <p>Loading...</p>
             } @else {
                 @for( provider of providerStore.providers(); track provider.id) {
-                    <!--! Convert to Mat-List -->
-                    <a mat-list-item href="/scheduler">
+                    <a mat-list-item href="/scheduler" [disabled]="provider.disabled" class="provider-list">
                         <figure matListItemIcon class="image is-48x48">
                             <img class="is-rounded profile-img" [src]="provider.picture" alt='{{provider.name}}'/>
-                            <img class="provider-img" [src]="provider.providerIdentifier + '.png'" [alt]='provider.providerIdentifier' />
+                            <img class="provider-img is-32x32" [src]="provider.providerIdentifier + '.png'" [alt]='provider.providerIdentifier' />
                         </figure>
-                        <!-- <img matListItemIcon [src]=" provider.picture" class="providerImg" alt='{{provider.name}}' />
-                        <img matListItemIcon class="provider-image"
-                            [src]="provider.providerIdentifier + '.png'" [alt]='provider.providerIdentifier' /> -->
                         
                         <div matListItemTitle *ngIf="sideNavCollapsed" class="providerName" >{{provider.name}}</div>
                         <div matListItemLine *ngIf="sideNavCollapsed" >{{provider.providerIdentifier}}</div>
+                        <div matListItemMeta *ngIf="sideNavCollapsed">
+                            <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger" (mouseenter)="openMenu()" aria-label="Provider menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu="matMenu" yPosition="above" xPosition="before">
+                                <button mat-menu-item (click)="deleteProvider(provider.id)">
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Delete</span>
+                                </button>
+                                <button mat-menu-item 
+                                    (click)="provider.disabled ? enableProvider(provider.id) : disableProvider(provider.id)">
+                                    <mat-icon>{{provider.disabled ? 'visibility' : 'visibility_off'}}</mat-icon>
+                                    <span>{{provider.disabled ? 'Enable' : 'Disable'}}</span>
+                                </button>
+                            </mat-menu>
+                        </div>
                     </a>
                     
                 } 

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal } from "@angular/core";
+import { Component, computed, effect, inject, Input, OnInit, signal, viewChild } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { SchedulerComponent } from "../scheduler/scheduler.component";
@@ -12,18 +12,16 @@ import { MatDialog } from "@angular/material/dialog";
 import { SelectSocialDialogComponent } from "../../components/select-social/select-social.component";
 import { Dialog } from "@angular/cdk/dialog";
 import { ProvidersStore } from "../../core/signal-states/providers.state";
+import {MatMenuModule, MatMenuPanel, MatMenuTrigger} from '@angular/material/menu';
 
 @Component({
     selector: "app-providers",
     standalone: true,
     imports: [
-        CommonModule, 
-        MatDividerModule,
-        MatSidenavModule, 
-        SchedulerComponent,
-        MatListModule,
-        MatIconModule,
-        MatButtonModule,
+        CommonModule, MatDividerModule,
+        MatSidenavModule, SchedulerComponent,
+        MatListModule, MatIconModule,
+        MatButtonModule, MatMenuModule
     ],
     templateUrl: "./providers.component.html",
     styleUrl: "./providers.component.scss",
@@ -44,16 +42,13 @@ export class ProvidersComponent {
 
     selectedProvider = signal('');
 
+    menuTrigger = viewChild<MatMenuTrigger>('menuTrigger');
+    menuOpened = signal(false);
+
 
     constructor() {
         this.providerStore.loadProviders();
-        // this.providerStore.writeToStorage();
     }
-
-    // sdss = effect( () => {
-    //     console.log(this.sideNavWidth);
-    //     console.log(this.sideNavCollapsed());
-    // });
 
     changeSideNav(val: string) {
         this.sideNavWidth = val;
@@ -77,6 +72,35 @@ export class ProvidersComponent {
 
     connectToSocial(provider: string) {
         this.providerService.getIntegrationUrl(provider);
+    }
+
+    openMenu() {
+        console.log('Menu');
+        this.menuTrigger().openMenu();
+    }
+
+    closeMenu() {
+        this.menuTrigger().closeMenu();
+    }
+
+    disableProvider(providerId: string) {
+        this.providerService.disableProvider(providerId, this.providerStore.orgId()).subscribe((result) => {
+            this.providerStore.removeProvider(providerId);
+            this.providerStore.addProvider(result);
+          });
+    }
+
+    enableProvider(providerId: string) {
+        this.providerService.enableProvider(providerId, this.providerStore.orgId()).subscribe((result) => {
+            this.providerStore.removeProvider(providerId);
+            this.providerStore.addProvider(result);
+          });;
+    }
+
+    deleteProvider(providerId: string) {
+        this.providerService.deleteProvider(providerId, this.providerStore.orgId()).subscribe((result) => {
+            this.providerStore.removeProvider(providerId);
+          });;
     }
 
 }
